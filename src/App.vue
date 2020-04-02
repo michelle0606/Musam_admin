@@ -5,24 +5,56 @@
 </template>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+$bgColor: #ebf3f5;
+$green: #a0b058;
+$red: #e23737;
+$blue: #17205b;
+$black: #252b3c;
+$grey: #919191;
+$white: #e5e5e5;
+
+body,
+html {
+  width: 100%;
+  min-height: 100vh;
+  padding: 0;
+  margin: 0;
+  font-family: 'cwTeXYen', sans-serif;
+  font-size: 18px;
+  background-color: $bgColor;
 }
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+* {
+  position: relative;
+  box-sizing: border-box;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+ul,
+li {
+  padding: 0;
+  margin: 0;
+}
+input,
+select {
+  appearance: none;
+  border-radius: 0px;
+  outline: none;
+  border: none;
+  font-family: 'cwTeXYen', sans-serif;
+}
+a {
+  text-decoration: none;
+}
+ul,
+li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 </style>
