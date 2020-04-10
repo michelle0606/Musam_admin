@@ -7,7 +7,8 @@
       到
       <input type="date" name="end" id="end" :max="end" :value="end" />
     </div>
-    <div class="orderOrCount">
+    <Spinner v-if="isLoading" />
+    <div class="orderOrCount" v-else>
       <router-link :to="{ name: 'total-order' }" v-if="state === 'order'"
         >產品數量統計</router-link
       >
@@ -21,6 +22,9 @@
         :key="order.id"
         :initial-order="order"
       />
+      <div class="feedback" v-if="orders.length < 1">
+        此區間目前無任何未完成訂單。
+      </div>
     </div>
     <div class="total-products" v-if="state === 'count'"></div>
 
@@ -33,6 +37,8 @@ import BottomBar from './../components/BottomBar'
 import TopBar from './../components/TopBar'
 import OrderCard from './../components/OrderCard'
 import orderAPI from '../apis/orders'
+import { Toast } from './../utils/helpers'
+import Spinner from './../components/Spinner'
 
 //////// date setting ////////
 const today = new Date()
@@ -49,7 +55,7 @@ const formatEndDate = `${year}-${month}-${endDay}`
 
 export default {
   name: 'orders',
-  components: { BottomBar, TopBar, OrderCard },
+  components: { BottomBar, TopBar, OrderCard, Spinner },
   data() {
     return {
       name: this.$options.name,
@@ -58,7 +64,8 @@ export default {
       start: formatStartDate,
       end: formatEndDate,
       state: 'order',
-      orders: []
+      orders: [],
+      isLoading: true
     }
   },
   created() {
@@ -71,8 +78,13 @@ export default {
         const { data, statusText } = response
         if (statusText !== 'OK') throw new Error(statusText)
         this.orders = data
+        this.isLoading = false
       } catch (error) {
-        console.log('err', error)
+        this.isLoading = false
+        Toast.fire({
+          type: 'error',
+          title: '無法取得訂單資訊，請稍後再試'
+        })
       }
     }
   }
@@ -80,7 +92,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$green: #34a94e;
+$green: #5fd399;
 $red: #e23737;
 $blue: #17205b;
 $black: #252b3c;
@@ -109,6 +121,11 @@ $white: #e5e5e5;
   .orders_box {
     height: 415px;
     overflow: scroll;
+    .feedback {
+      padding: 10px;
+      text-align: center;
+      font-weight: 200;
+    }
   }
 }
 </style>
