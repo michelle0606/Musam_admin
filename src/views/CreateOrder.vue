@@ -123,7 +123,7 @@
         </div>
       </div>
     </form>
-    <BottomBar />
+    <BottomBar :page-name="name" />
   </div>
 </template>
 <script>
@@ -136,6 +136,7 @@ export default {
   components: { TopBar, BottomBar },
   data() {
     return {
+      name: this.$options.name,
       title: '新增訂單',
       buttonType: 'back',
       step: 'one',

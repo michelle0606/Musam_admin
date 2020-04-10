@@ -7,12 +7,12 @@
       </div>
       <div class="order-info">
         <div class="date-and-time">
-          <span>{{ order.pickup_date }}</span>
-          <span>{{ order.pickup_time }}</span>
+          <span>{{ order.pickup_date }}3/17</span>
+          <span>{{ order.pickup_time }}14:00</span>
         </div>
         <div class="name-and-phone">
-          <span>{{ order.name }}</span>
-          <span>{{ order.phone }}</span>
+          <span>{{ order.recipient_name }}</span>
+          <span>{{ order.recipient_phone }}</span>
         </div>
       </div>
     </div>
@@ -61,6 +61,10 @@ $white: #e5e5e5;
     }
     .name-and-phone {
       color: #000000;
+      font-weight: 200;
+      width: 224px;
+      white-space: nowrap;
+      overflow: scroll;
     }
     div {
       span {

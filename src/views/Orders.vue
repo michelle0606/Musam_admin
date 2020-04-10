@@ -24,7 +24,7 @@
     </div>
     <div class="total-products" v-if="state === 'count'"></div>
 
-    <BottomBar />
+    <BottomBar :page-name="name" />
   </div>
 </template>
 
@@ -32,33 +32,7 @@
 import BottomBar from './../components/BottomBar'
 import TopBar from './../components/TopBar'
 import OrderCard from './../components/OrderCard'
-
-const dummyDate = [
-  {
-    id: '1',
-    name: '王小明',
-    phone: '0912345678',
-    pickup_date: '4/22',
-    pickup_time: '11:00',
-    product_delivery: 'home'
-  },
-  {
-    id: '2',
-    name: '陳小華',
-    phone: '0912345678',
-    pickup_date: '4/22',
-    pickup_time: '14:00',
-    product_delivery: 'home'
-  },
-  {
-    id: '3',
-    name: '孫小美',
-    phone: '0912345678',
-    pickup_date: '4/22',
-    pickup_time: '17:00',
-    product_delivery: 'self'
-  }
-]
+import orderAPI from '../apis/orders'
 
 //////// date setting ////////
 const today = new Date()
@@ -74,10 +48,11 @@ const formatEndDate = `${year}-${month}-${endDay}`
 //////////////////////////////
 
 export default {
-  name: 'Orders',
+  name: 'orders',
   components: { BottomBar, TopBar, OrderCard },
   data() {
     return {
+      name: this.$options.name,
       title: '未完成訂單',
       buttonType: 'add',
       start: formatStartDate,
@@ -90,8 +65,15 @@ export default {
     this.fetchOrders()
   },
   methods: {
-    fetchOrders() {
-      this.orders = dummyDate
+    async fetchOrders() {
+      try {
+        const response = await orderAPI.getOrders()
+        const { data, statusText } = response
+        if (statusText !== 'OK') throw new Error(statusText)
+        this.orders = data
+      } catch (error) {
+        console.log('err', error)
+      }
     }
   }
 }
@@ -123,6 +105,10 @@ $white: #e5e5e5;
     a {
       color: $blue;
     }
+  }
+  .orders_box {
+    height: 415px;
+    overflow: scroll;
   }
 }
 </style>
