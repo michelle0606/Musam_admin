@@ -1,6 +1,6 @@
 <template>
   <div class="orders">
-    <TopBar />
+    <TopBar :page-title="title" :button-type="buttonType" />
     <div class="datepicker">
       從
       <input type="date" name="start" id="start" :min="start" :value="start" />
@@ -8,20 +8,21 @@
       <input type="date" name="end" id="end" :max="end" :value="end" />
     </div>
     <div class="orderOrCount">
-      <router-link :to="{ name: 'total-order' }" v-if="state === 'count'"
+      <router-link :to="{ name: 'total-order' }" v-if="state === 'order'"
         >產品數量統計</router-link
       >
-      <router-link :to="{ name: 'orders' }" v-if="state === 'order'"
+      <router-link :to="{ name: 'orders' }" v-if="state === 'count'"
         >瀏覽未完成訂單</router-link
       >
     </div>
-    <div class="orders_box">
+    <div class="orders_box" v-if="state === 'order'">
       <OrderCard
         v-for="order in orders"
         :key="order.id"
         :initial-order="order"
       />
     </div>
+    <div class="total-products" v-if="state === 'count'"></div>
 
     <BottomBar />
   </div>
@@ -31,6 +32,7 @@
 import BottomBar from './../components/BottomBar'
 import TopBar from './../components/TopBar'
 import OrderCard from './../components/OrderCard'
+
 const dummyDate = [
   {
     id: '1',
@@ -76,9 +78,11 @@ export default {
   components: { BottomBar, TopBar, OrderCard },
   data() {
     return {
+      title: '未完成訂單',
+      buttonType: 'add',
       start: formatStartDate,
       end: formatEndDate,
-      state: 'count',
+      state: 'order',
       orders: []
     }
   },
