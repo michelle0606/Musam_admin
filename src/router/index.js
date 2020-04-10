@@ -1,12 +1,16 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Orders from '../views/Orders.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
+    exact: true,
+    redirect: '/orders'
+  },
+  {
+    path: '/orders',
     name: 'orders',
     component: () => import('../views/Orders.vue')
   },
@@ -18,28 +22,28 @@ const routes = [
   {
     path: '/orders/total',
     name: 'total-order',
-    component: Orders
+    component: () => import('../views/TotalOrder.vue')
   },
   {
     path: '/order/:id',
     name: 'order',
-    component: Orders
+    component: () => import('../views/Order.vue')
   },
-  {
-    path: '/customers',
-    name: 'customers',
-    component: Orders
-  },
+  // {
+  //   path: '/customers',
+  //   name: 'customers',
+  //   component: () => import('../views/Customers.vue')
+  // },
   {
     path: '/products',
     name: 'products',
-    component: Orders
-  },
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: Orders
+    component: () => import('../views/Products.vue')
   }
+  // {
+  //   path: '/dashboard',
+  //   name: 'dashboard',
+  //   component: () => import('../views/Dashboard.vue')
+  // }
 ]
 
 const router = new VueRouter({
