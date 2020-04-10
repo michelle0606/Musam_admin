@@ -7,8 +7,8 @@
       </div>
       <div class="order-info">
         <div class="date-and-time">
-          <span>{{ order.pickup_date }}3/17</span>
-          <span>{{ order.pickup_time }}14:00</span>
+          <span>{{ order.pickup_date }}</span>
+          <span>{{ order.pickup_time }}</span>
         </div>
         <div class="name-and-phone">
           <span>{{ order.recipient_name }}</span>

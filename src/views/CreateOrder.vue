@@ -1,25 +1,45 @@
 <template>
   <div class="create-order">
     <TopBar :page-title="title" :button-type="buttonType" />
-    <form action="" method="post">
+    <form @submit.prevent.stop="handleSubmit">
       <div class="wrapper">
         <div v-show="step === 'one'">
           <div class="customer-info">
             <div class="form-title">訂購人</div>
             <div>
-              <input type="text" placeholder="輸入姓名" />
+              <input
+                v-model="customer_name"
+                type="text"
+                name="customer_name"
+                placeholder="輸入姓名"
+              />
             </div>
             <div>
-              <input type="text" placeholder="輸入電話號碼" />
+              <input
+                v-model="customer_phone"
+                type="text"
+                name="phone"
+                placeholder="輸入電話號碼"
+              />
             </div>
           </div>
           <div class="recipient-info">
             <div class="form-title">收件人</div>
             <div>
-              <input type="text" placeholder="輸入姓名" />
+              <input
+                v-model="recipient_name"
+                type="text"
+                name="recipient_name"
+                placeholder="輸入姓名"
+              />
             </div>
             <div>
-              <input type="text" placeholder="輸入電話號碼" />
+              <input
+                v-model="recipient_phone"
+                type="text"
+                name="recipient_phone"
+                placeholder="輸入電話號碼"
+              />
             </div>
             <div class="form-title">選擇取貨日期與時間</div>
             <div class="calender-wrapper">
@@ -27,11 +47,25 @@
                 :icon="['fas', 'calendar-alt']"
                 class="calender"
               />
-              <input type="date" name="date" id="date" class="date" />
+              <input
+                v-model="pickup_date"
+                type="date"
+                name="pickup_date"
+                id="date"
+                class="date"
+                value=""
+              />
             </div>
             <div class="calender-wrapper">
               <font-awesome-icon :icon="['fas', 'clock']" class="calender" />
-              <input type="time" name="time" id="time" class="time" />
+              <input
+                v-model="pickup_time"
+                type="time"
+                name="pickup_time"
+                id="time"
+                class="time"
+                value="14:00"
+              />
             </div>
           </div>
           <div class="product-delivery">
@@ -51,6 +85,7 @@
             </div>
             <div v-show="product_delivery === 'home'">
               <input
+                v-model="address"
                 type="text"
                 name="address"
                 class="address"
@@ -111,14 +146,16 @@
           </table>
         </div>
         <div class="note-area">
-          <input type="text" placeholder="訂單備註" />
+          <input type="text" name="note" placeholder="訂單備註" />
         </div>
         <div class="btn-group">
           <div class="last">
             <div @click.stop.prevent="goToNextStep">上一步</div>
           </div>
           <div class="create-button">
-            <div @click.stop.prevent="goToNextStep">成立訂單</div>
+            <button :disabled="isProcessing" type="submit">
+              成立訂單
+            </button>
           </div>
         </div>
       </div>
@@ -129,7 +166,17 @@
 <script>
 import TopBar from './../components/TopBar'
 import BottomBar from './../components/BottomBar'
-import productsAPI from '../apis/products'
+import productAPI from '../apis/products'
+import orderAPI from '../apis/orders'
+import { Toast } from './../utils/helpers'
+
+const today = new Date()
+const year = today.getFullYear()
+const month =
+  today.getMonth() + 1 < 10 ? `0${today.getMonth() + 1}` : today.getMonth() + 1
+const defaultDay =
+  today.getDate() + 1 < 10 ? `0${today.getDate() + 1}` : today.getDate() + 1
+const formatDate = `${year}-${month}-${defaultDay}`
 
 export default {
   name: 'create-order',
@@ -143,15 +190,20 @@ export default {
       products: [],
       inputValue: '',
       matchProducts: [],
+      ///// order info /////
       customer_name: '',
       customer_phone: '',
       recipient_name: '',
       recipient_phone: '',
       address: '',
       note: '',
-      pickup_time: '',
+      pickup_date: formatDate,
+      pickup_time: '14:00',
       product_delivery: 'self',
-      orderProducts: []
+      orderProducts: [],
+      amount: 0,
+      //////////////////////
+      isProcessing: false
     }
   },
   created() {
@@ -160,7 +212,7 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const response = await productsAPI.getProducts()
+        const response = await productAPI.getProducts()
         const { data, statusText } = response
         if (statusText !== 'OK') throw new Error(statusText)
         this.products = data
@@ -189,13 +241,50 @@ export default {
         return product.id == productId
       })
       this.orderProducts.push(...orderProduct)
+    },
+    async handleSubmit(e) {
+      try {
+        if (
+          !this.recipient_name ||
+          !this.recipient_phone ||
+          !this.pickup_date ||
+          !this.pickup_time ||
+          !this.customer_name ||
+          !this.customer_phone ||
+          (this.product_delivery === 'home' && !this.address)
+        ) {
+          Toast.fire({
+            type: 'warning',
+            title: '訂單的所有資訊皆是必填。'
+          })
+          return
+        }
+        this.isProcessing = true
+        const formData = {
+          customer_name: this.customer_name,
+          customer_phone: this.customer_phone,
+          recipient_name: this.recipient_name,
+          recipient_phone: this.recipient_phone,
+          pickup_date: this.pickup_date,
+          pickup_time: this.pickup_time,
+          product_delivery: this.product_delivery
+        }
+        const response = await orderAPI.postOrder({ formData })
+        const { data, statusText } = response
+        if (statusText !== 'OK' || data.status !== 'success')
+          throw new Error(statusText)
+        this.$router.push('/orders') //要轉到當筆訂單的頁面
+      } catch (error) {
+        console.log('error', error)
+        this.isProcessing = false
+      }
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 $bgColor: #ebf3f5;
-$green: #34a94e;
+$green: #5fd399;
 $red: #e23737;
 $blue: #17205b;
 $black: #252b3c;
@@ -355,7 +444,7 @@ td {
   justify-content: space-between;
   margin-top: 20px;
   .create-button {
-    div {
+    button {
       background-color: $black;
       color: $white;
       border-radius: 5px;
