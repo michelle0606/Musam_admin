@@ -23,12 +23,12 @@
     </form>
     <Spinner v-if="isLoading" />
     <div class="orderOrCount" v-else>
-      <router-link :to="{ name: 'total-order' }" v-if="state === 'order'"
-        >產品數量統計</router-link
-      >
-      <router-link :to="{ name: 'orders' }" v-if="state === 'count'"
-        >瀏覽未完成訂單</router-link
-      >
+      <div v-if="state === 'order'" @click.stop.prevent="changeState">
+        產品數量統計
+      </div>
+      <div v-if="state === 'count'" @click.stop.prevent="changeState">
+        瀏覽未完成訂單
+      </div>
     </div>
     <div class="orders_box" v-if="state === 'order'">
       <OrderCard
@@ -40,8 +40,9 @@
         此區間目前無任何未完成訂單。
       </div>
     </div>
-    <div class="total-products" v-if="state === 'count'"></div>
-
+    <div class="total-products" v-if="state === 'count'">
+      產品數量統計
+    </div>
     <BottomBar :page-name="name" />
   </div>
 </template>
@@ -83,37 +84,40 @@ export default {
     }
   },
   created() {
-    this.fetchOrders()
+    this.handleDateChange()
   },
   methods: {
-    async fetchOrders() {
-      try {
-        const response = await orderAPI.getOrders()
-        const { data, statusText } = response
-        if (statusText !== 'OK') throw new Error(statusText)
-        this.orders = data
-        this.isLoading = false
-      } catch (error) {
-        this.isLoading = false
-        Toast.fire({
-          type: 'error',
-          title: '無法取得訂單資訊，請稍後再試'
-        })
-      }
-    },
+    // async fetchOrders() {
+    //   try {
+    //     const response = await orderAPI.getOrders()
+    //     const { data, statusText } = response
+    //     if (statusText !== 'OK') throw new Error(statusText)
+    //     this.orders = data
+    //     this.isLoading = false
+    //   } catch (error) {
+    //     this.isLoading = false
+    //     Toast.fire({
+    //       type: 'error',
+    //       title: '無法取得訂單資訊，請稍後再試'
+    //     })
+    //   }
+    // },
     async handleDateChange(e) {
       try {
-        this.isLoading = true
-        const targetName = e.target.name
-        const targetValue = e.target.value
-        switch (targetName) {
-          case 'startDate':
-            this.start = targetValue
-            break
-          case 'endDate':
-            this.end = targetValue
-            break
+        if (e) {
+          this.isLoading = true
+          const targetName = e.target.name
+          const targetValue = e.target.value
+          switch (targetName) {
+            case 'startDate':
+              this.start = targetValue
+              break
+            case 'endDate':
+              this.end = targetValue
+              break
+          }
         }
+
         const ordersDate = {
           startDate: this.start,
           endDate: this.end
@@ -130,6 +134,9 @@ export default {
           title: '無法取得訂單資訊，請稍後再試'
         })
       }
+    },
+    changeState() {
+      this.state = this.state === 'order' ? 'count' : 'order'
     }
   }
 }
