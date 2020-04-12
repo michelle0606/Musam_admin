@@ -3,8 +3,8 @@ import { apiHelper } from './../utils/helpers'
 import qs from 'qs'
 
 export default {
-  getOrders() {
-    return apiHelper.get('/admin/orders')
+  getOrders({ ordersDate }) {
+    return apiHelper.post('/admin/orders/date', qs.stringify(ordersDate))
   },
   postOrder({ formData }) {
     return apiHelper.post('/admin/order', qs.stringify(formData))

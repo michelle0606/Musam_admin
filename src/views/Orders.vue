@@ -1,12 +1,26 @@
 <template>
   <div class="orders">
     <TopBar :page-title="title" :button-type="buttonType" />
-    <div class="datepicker">
+    <form class="datepicker">
       從
-      <input type="date" name="start" id="start" :min="start" :value="start" />
+      <input
+        type="date"
+        name="startDate"
+        id="start"
+        :min="start"
+        :value="start"
+        @input="handleDateChange"
+      />
       到
-      <input type="date" name="end" id="end" :max="end" :value="end" />
-    </div>
+      <input
+        type="date"
+        name="endDate"
+        id="end"
+        :max="end"
+        :value="end"
+        @input="handleDateChange"
+      />
+    </form>
     <Spinner v-if="isLoading" />
     <div class="orderOrCount" v-else>
       <router-link :to="{ name: 'total-order' }" v-if="state === 'order'"
@@ -75,6 +89,36 @@ export default {
     async fetchOrders() {
       try {
         const response = await orderAPI.getOrders()
+        const { data, statusText } = response
+        if (statusText !== 'OK') throw new Error(statusText)
+        this.orders = data
+        this.isLoading = false
+      } catch (error) {
+        this.isLoading = false
+        Toast.fire({
+          type: 'error',
+          title: '無法取得訂單資訊，請稍後再試'
+        })
+      }
+    },
+    async handleDateChange(e) {
+      try {
+        this.isLoading = true
+        const targetName = e.target.name
+        const targetValue = e.target.value
+        switch (targetName) {
+          case 'startDate':
+            this.start = targetValue
+            break
+          case 'endDate':
+            this.end = targetValue
+            break
+        }
+        const ordersDate = {
+          startDate: this.start,
+          endDate: this.end
+        }
+        const response = await orderAPI.getOrders({ ordersDate })
         const { data, statusText } = response
         if (statusText !== 'OK') throw new Error(statusText)
         this.orders = data
