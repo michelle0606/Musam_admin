@@ -9,10 +9,10 @@ export default {
   postOrder({ formData }) {
     return apiHelper.post('/admin/order', qs.stringify(formData))
   },
-  getOrder({ orderId }) {
+  getOrder(orderId) {
     return apiHelper.get(`/admin/order/${orderId}`)
   },
-  updateOrder({ orderId, formData }) {
-    return apiHelper.put(`/admin/order/${orderId}`, formData)
+  updateOrder({ formData }) {
+    return apiHelper.put(`/admin/order/${formData.id}`, qs.stringify(formData))
   }
 }
