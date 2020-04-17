@@ -2,10 +2,7 @@
   <div class="bottom-bar">
     <ul>
       <li v-for="page in pages" :key="page.id">
-        <router-link
-          :to="{ name: page.name }"
-          :class="{ 'pg-active': page.active }"
-        >
+        <router-link :to="{ name: page.name }" :class="{ 'pg-active': page.active }">
           <font-awesome-icon :icon="page.icon" />
         </router-link>
       </li>
@@ -26,29 +23,29 @@ export default {
       pages: [
         {
           id: 1,
-          name: 'dashboard',
-          icon: ['fas', 'chart-line'],
+          name: "dashboard",
+          icon: ["fas", "chart-line"],
           active: false
         },
-        { id: 2, name: 'product', icon: ['fas', 'candy-cane'], active: false },
+        { id: 2, name: "products", icon: ["fas", "candy-cane"], active: false },
         {
           id: 3,
-          name: 'customer',
-          icon: ['far', 'address-book'],
+          name: "customers",
+          icon: ["far", "address-book"],
           active: false
         },
-        { id: 4, name: 'order', icon: ['fas', 'th-list'], active: false }
+        { id: 4, name: "order", icon: ["fas", "th-list"], active: false }
       ]
-    }
+    };
   },
   created() {
     this.pages.forEach(p => {
       if (this.pageName.match(p.name)) {
-        p.active = true
+        p.active = true;
       }
-    })
+    });
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -62,7 +59,7 @@ $white: #e5e5e5;
 .bottom-bar {
   position: absolute;
   width: 100%;
-  bottom: 0;
+  bottom: 0px;
   background-color: #ffffff;
   ul {
     display: grid;
