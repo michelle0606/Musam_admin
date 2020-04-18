@@ -35,7 +35,6 @@ export default {
           throw new Error(statusText);
         }
         this.products = data;
-        console.log(this.products);
       } catch (error) {
         console.log("err", error);
       }

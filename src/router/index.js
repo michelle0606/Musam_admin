@@ -37,9 +37,9 @@ const routes = [
     component: Products
   },
   {
-    path: '/product/:id',
-    name: 'product',
-    component: Orders
+    path: '/product/create',
+    name: 'product-create',
+    component: () => import('../views/CreateProduct.vue')
   },
   {
     path: '/dashboard',
