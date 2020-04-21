@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+import Orders from '../views/Orders.vue'
+import Products from '../views/Products.vue'
 
 Vue.use(VueRouter)
 
@@ -32,7 +34,18 @@ const routes = [
   {
     path: '/products',
     name: 'products',
-    component: () => import('../views/Products.vue')
+    component: Products
+  },
+  {
+    path: '/product/:id',
+    name: 'product',
+    component: Orders
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: Orders
+
   }
   // {
   //   path: '/dashboard',

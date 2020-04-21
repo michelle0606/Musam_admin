@@ -1,0 +1,59 @@
+<template>
+  <div class="product-page">
+    <TopBar :page-title="title" :button-type="buttonType" />
+    <ProductCard :products="products" />
+    <BottomBar :page-name="name" />
+  </div>
+</template>
+
+<script>
+import BottomBar from "./../components/BottomBar";
+import TopBar from "./../components/TopBar";
+import ProductAPI from "../apis/products";
+import ProductCard from "../components/ProductCard";
+
+export default {
+  components: { BottomBar, TopBar, ProductCard },
+
+  data() {
+    return {
+      name: "products",
+      title: "商品管理",
+      products: [],
+      buttonType: "add"
+    };
+  },
+  created() {
+    this.fetchProducts();
+  },
+  methods: {
+    async fetchProducts(req, res) {
+      try {
+        const { data, statusText } = await ProductAPI.getProducts();
+
+        if (statusText !== "OK") {
+          throw new Error(statusText);
+        }
+        this.products = data;
+        console.log(this.products);
+      } catch (error) {
+        console.log("err", error);
+      }
+    }
+  }
+};
+</script>
+
+
+<style lang="scss" scoped>
+$green: #34a94e;
+$red: #e23737;
+$blue: #17205b;
+$black: #252b3c;
+$grey: #919191;
+$white: #e5e5e5;
+
+.product-page {
+  height: 100vh;
+}
+</style>
