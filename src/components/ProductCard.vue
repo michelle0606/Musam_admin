@@ -3,7 +3,7 @@
     <div v-for="product in products" :key="product.id">
       <router-link :to="{ name: 'product', params: { id: product.id } }">
         <div class="product">
-          <div v-if="product.status ==='on'" class="circle-row">
+          <div v-if="product.status === 'on'" class="circle-row">
             <div class="circle-green"></div>
             <div class="circle-grey"></div>
           </div>
@@ -15,7 +15,7 @@
             <img class="image" :src="product.image" />
           </div>
           <div class="product-name">
-            <span class="name">{{product.name}}</span>
+            <span class="name">{{ product.name }}</span>
           </div>
         </div>
       </router-link>
@@ -28,10 +28,10 @@ export default {
   props: {
     products: {
       type: Array,
-      required: true
-    }
-  }
-};
+      required: true,
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
@@ -47,9 +47,8 @@ $white: #e5e5e5;
   display: grid;
   grid-template-columns: 140px 140px;
   grid-template-rows: 140px;
-  grid-gap: 30px;
-  width: 340px;
-  height: 82%;
+  grid-gap: 20px;
+  height: 450px;
   margin: 0 auto;
   margin-top: 23px;
   justify-content: center;
@@ -102,14 +101,16 @@ $white: #e5e5e5;
 
     .product-name {
       margin: 0 auto;
-      padding: 5px;
-
+      padding: 5px 15px;
+      width: inherit;
+      overflow: scroll;
       .name {
         color: $grey;
         font-family: Roboto;
         font-style: normal;
-        font-weight: normal;
-        font-size: 18px;
+        font-weight: 200;
+        font-size: 16px;
+        white-space: nowrap;
       }
     }
   }
