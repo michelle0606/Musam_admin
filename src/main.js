@@ -12,7 +12,8 @@ import {
   faThList,
   faPlus,
   faClock,
-  faImage
+  faImage,
+  faPlusCircle
 } from '@fortawesome/free-solid-svg-icons'
 import { faAddressBook, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -26,7 +27,8 @@ library.add(
   faPlus,
   faTrashAlt,
   faClock,
-  faImage
+  faImage,
+  faPlusCircle
 )
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

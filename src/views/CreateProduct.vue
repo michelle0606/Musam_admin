@@ -4,15 +4,20 @@
     <div class="product">
       <div class="product-image">
         <label for="pic">
-          <font-awesome-icon :icon="['fa', 'image']" class="icon" />
-          <div>
-            <span>上傳圖片</span>
+          <div v-if="image" class="image">
+            <img :src="image" width="100%" />
           </div>
-          <input type="file" id="pic" class="file" />
+          <div v-else>
+            <font-awesome-icon :icon="['fa', 'image']" class="icon" />
+            <div>
+              <span>上傳圖片</span>
+            </div>
+          </div>
+          <input type="file" id="pic" class="file" @change="fileSelected" />
         </label>
       </div>
       <div class="product-name">
-        <input type="text" placeholder="商品名稱" class="name" />
+        <input type="text" v-model="name" placeholder="商品名稱" class="name" />
       </div>
       <div class="product-price">
         <div class="sale-price">
@@ -20,6 +25,34 @@
         </div>
 
         <div class="size">
+          <!-- <div class="form-input">
+            <div class="select">
+              <select name="select-list" @change="selectSize($event)" class="select-list">
+                <option value disabled selected>選擇大小</option>
+                <option v-for="size in sizes" :key="size.id" :value="size.id">{{size.size}}</option>
+              </select>
+            </div>|
+            <input type="text" id="s" placeholder="請輸入金額" class="input" />
+          </div>-->
+          <div v-for="data in sizeInputArray" :key="data.index">
+            <div class="form-input">
+              <div class="select">
+                <select
+                  name="select-list"
+                  @change="selectSize($event)"
+                  class="select-list"
+                  :data-index="data.index"
+                >
+                  <option value disabled selected>選擇大小</option>
+                  <option v-for="size in data.sizes" :key="size.id" :value="size.id">{{size.size}}</option>
+                </select>
+              </div>|
+              <input type="text" placeholder="請輸入金額" class="input" />
+            </div>
+          </div>
+          <div>
+            <font-awesome-icon :icon="['fa', 'plus-circle']" class="icon" @click="addSize" />
+          </div>
           <div class="form-input">
             <label for="s" class="label">7cm</label> |
             <input type="text" id="s" placeholder="請輸入" class="input" />
@@ -41,7 +74,7 @@
         <div @click.stop.prevent="goToNextStep">上架商品</div>
       </div>
     </div>
-    <BottomBar :page-name="name" />
+    <!-- <BottomBar :page-name="name" /> -->
   </div>
 </template>
 
@@ -55,26 +88,121 @@ export default {
 
   data() {
     return {
-      name: "products",
+      sizeRawData: [],
+      sizes: [],
+      selectArray: [],
+      sizeInputCount: 0,
+      sizeInputArray: [],
+      key: "請選擇",
+      name: "",
       title: "新增商品",
-      buttonType: "add"
+      buttonType: "add",
+      image: ""
     };
   },
   created() {
-    this.fetchProducts();
+    this.fetchSizes();
   },
   methods: {
-    async fetchProduct(req, res) {
+    async fetchSizes(req, res) {
       try {
-        const { data, statusText } = await ProductAPI.createProduct();
+        const { data, statusText } = await ProductAPI.getSizes();
 
-        if (statusText !== "OK" || data.status !== "success") {
+        if (statusText !== "OK") {
           throw new Error(statusText);
         }
-        this.products = data;
+        this.sizes = data;
+        this.sizeRawData = data;
       } catch (error) {
         console.log("err", error);
       }
+    },
+    fileSelected(event) {
+      const file = event.target.files.item(0);
+      const reader = new FileReader();
+      reader.addEventListener("load", e => {
+        this.image = e.target.result;
+      });
+      reader.readAsDataURL(file);
+    },
+    selectSize(event) {
+      const selectId = Number(event.currentTarget.dataset.index);
+      const selectValue = Number(event.currentTarget.value);
+      let beChangeValue = 0;
+
+      //record every select zone's option value
+      this.selectArray = this.selectArray.map(select => {
+        const singleSelectId = Number(select.selectId);
+        if (singleSelectId !== selectId) {
+          return (select = {
+            ...select
+          });
+        } else {
+          this.sizes = this.sizes.filter(size => {
+            if (size.id !== selectValue) {
+              return size;
+            }
+          });
+          //original value must be record and return to every select zone's options
+          beChangeValue = select.selectSizeId;
+
+          if (beChangeValue !== 0) {
+            this.sizes.push(
+              ...this.sizeRawData.filter(size =>
+                Number(size.id) === Number(beChangeValue) ? size : false
+              )
+            );
+          }
+          return (select = {
+            ...select,
+            selectId: selectId,
+            selectSizeId: Number(selectValue)
+          });
+        }
+      });
+
+      //Size array filter
+      this.sizeInputArray = this.sizeInputArray.map(input => {
+        //change other select zone's size options
+        if (Number(input.index) !== selectId) {
+          const filter = input.sizes.filter(size => {
+            if (size.id !== selectValue) {
+              return size;
+            }
+          });
+
+          if (beChangeValue !== 0) {
+            filter.push(
+              ...this.sizeRawData.filter(size =>
+                Number(size.id) === Number(beChangeValue) ? size : false
+              )
+            );
+          }
+
+          return (input = {
+            ...input,
+            sizes: filter
+          });
+        }
+
+        return (input = {
+          ...input
+        });
+      });
+    },
+    addSize() {
+      this.sizeInputCount = this.sizeInputCount + 1;
+
+      //original version
+      this.sizeInputArray.push({
+        index: this.sizeInputCount,
+        sizes: this.sizes
+      });
+
+      this.selectArray.push({
+        selectId: this.sizeInputCount,
+        selectSizeId: 0
+      });
     }
   }
 };
@@ -100,6 +228,13 @@ $white: #e5e5e5;
     background-color: #ffffff;
     width: 150px;
     height: 150px;
+
+    .image {
+      height: 100%;
+      display: flex;
+      align-items: center;
+    }
+
     .icon {
       font-size: 100px;
     }
@@ -127,6 +262,10 @@ $white: #e5e5e5;
     margin: 5% 10%;
     background-color: #ffffff;
 
+    .icon {
+      font-size: 35px;
+    }
+
     .sale-price {
       padding: 3%;
       font-size: 19px;
@@ -136,6 +275,18 @@ $white: #e5e5e5;
       padding: 3%;
       display: grid;
       grid-template-columns: 49% 2% 49%;
+
+      .select {
+        text-align: right;
+        width: 100%;
+        padding-right: 10px;
+        font-size: 20px;
+      }
+
+      .select-list {
+        font-size: 18px;
+        color: $grey;
+      }
 
       .label {
         font-size: 20px;
