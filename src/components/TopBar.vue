@@ -2,15 +2,15 @@
   <div class="top-bar">
     <div v-if="button === 'back'" class="type-one">
       <div v-if="title === '新增訂單'">
-        <router-link :to="{ name: 'create-order' }">
+        <router-link :to="{ name: 'orders' }">
           <font-awesome-icon :icon="['fas', 'arrow-left']" />
         </router-link>
+        <div class="title">{{ title }}</div>
       </div>
-      <div class="title">{{ title }}</div>
     </div>
     <div v-if="button === 'add'" class="type-two">
-      <div class="title">{{ title }}</div>
       <div v-if="title === '未完成訂單'" class="add">
+        <div class="title">{{ title }}</div>
         <router-link :to="{ name: 'create-order' }">
           ＋
         </router-link>
@@ -55,7 +55,8 @@ $white: #e5e5e5;
   height: 60px;
   padding: 0px 20px;
   color: $white;
-  .type-one {
+  display: grid;
+  .type-one > div {
     display: flex;
     align-items: center;
     height: 100%;
@@ -64,7 +65,7 @@ $white: #e5e5e5;
       margin-right: 10px;
     }
   }
-  .type-two {
+  .type-two > div {
     display: flex;
     align-items: center;
     justify-content: space-between;

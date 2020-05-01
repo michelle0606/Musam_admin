@@ -49,7 +49,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$green: #34a94e;
+$green: #5fd399;
 $red: #e23737;
 $blue: #17205b;
 $black: #252b3c;

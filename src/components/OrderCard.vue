@@ -7,8 +7,8 @@
       </div>
       <div class="order-info">
         <div class="date-and-time">
-          <span>{{ order.pickup_date }}3/17</span>
-          <span>{{ order.pickup_time }}14:00</span>
+          <span>{{ formatDate(order.pickup_date) }}</span>
+          <span>{{ formatTime(order.pickup_time) }}</span>
         </div>
         <div class="name-and-phone">
           <span>{{ order.recipient_name }}</span>
@@ -30,6 +30,19 @@ export default {
   data() {
     return {
       order: this.initialOrder
+    }
+  },
+  methods: {
+    formatDate(date) {
+      const day = new Date(date)
+      const formatMonth =
+        day.getMonth() > 10 ? day.getMonth() : day.getMonth() + 1
+      const formatDate = day.getDate() > 10 ? day.getDate() : day.getDate() + 1
+      return `${formatMonth}/${formatDate}`
+    },
+
+    formatTime(time) {
+      if (time) return time.slice(0, 5)
     }
   }
 }

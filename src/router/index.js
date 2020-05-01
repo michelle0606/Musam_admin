@@ -8,6 +8,11 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
+    exact: true,
+    redirect: '/orders'
+  },
+  {
+    path: '/orders',
     name: 'orders',
     component: () => import('../views/Orders.vue')
   },
@@ -17,20 +22,15 @@ const routes = [
     component: () => import('../views/CreateOrder.vue')
   },
   {
-    path: '/orders/total',
-    name: 'total-order',
-    component: Orders
-  },
-  {
     path: '/order/:id',
     name: 'order',
-    component: Orders
+    component: () => import('../views/Order.vue')
   },
-  {
-    path: '/customers',
-    name: 'customers',
-    component: Orders
-  },
+  // {
+  //   path: '/customers',
+  //   name: 'customers',
+  //   component: () => import('../views/Customers.vue')
+  // },
   {
     path: '/products',
     name: 'products',
@@ -50,7 +50,13 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: Orders
+
   }
+  // {
+  //   path: '/dashboard',
+  //   name: 'dashboard',
+  //   component: () => import('../views/Dashboard.vue')
+  // }
 ]
 
 const router = new VueRouter({

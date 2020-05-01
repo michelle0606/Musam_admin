@@ -1,17 +1,18 @@
 import { apiHelper } from './../utils/helpers'
 // const getToken = () => localStorage.getItem('token')
+import qs from 'qs'
 
 export default {
-  getOrders() {
-    return apiHelper.get('/admin/orders')
+  getOrders({ ordersDate }) {
+    return apiHelper.post('/admin/orders/date', qs.stringify(ordersDate))
   },
-  postOrder() {
-    return apiHelper.post('/admin/order')
+  postOrder({ formData }) {
+    return apiHelper.post('/admin/order', qs.stringify(formData))
   },
-  getOrder() {
-    return apiHelper.get('/admin/order/:order_id')
+  getOrder(orderId) {
+    return apiHelper.get(`/admin/order/${orderId}`)
   },
-  updateOrder() {
-    return apiHelper.put('/admin/order/:order_id')
+  updateOrder({ formData }) {
+    return apiHelper.put(`/admin/order/${formData.id}`, qs.stringify(formData))
   }
 }
