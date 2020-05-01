@@ -1,79 +1,76 @@
 <template>
   <div class="product-create">
     <TopBar :page-title="title" :button-type="buttonType" />
-    <div class="product">
-      <div class="product-image">
-        <label for="pic">
-          <div v-if="image" class="image">
-            <img :src="image" width="100%" />
-          </div>
-          <div v-else>
-            <font-awesome-icon :icon="['fa', 'image']" class="icon" />
-            <div>
-              <span>上傳圖片</span>
+    <form @submit.stop.prevent="submit">
+      <div class="product">
+        <div class="product-image">
+          <label for="pic">
+            <div v-if="image" class="image">
+              <img :src="image" width="100%" />
             </div>
-          </div>
-          <input type="file" id="pic" class="file" @change="fileSelected" />
-        </label>
-      </div>
-      <div class="product-name">
-        <input type="text" v-model="name" placeholder="商品名稱" class="name" />
-      </div>
-      <div class="product-price">
-        <div class="sale-price">
-          <span>商品售價</span>
+            <div v-else>
+              <font-awesome-icon :icon="['fa', 'image']" class="icon" />
+              <div>
+                <span>上傳圖片</span>
+              </div>
+            </div>
+            <input type="file" name="image" id="pic" class="file" @change="fileSelected" />
+          </label>
         </div>
+        <div class="product-name">
+          <input type="text" name="name" v-model="name" placeholder="商品名稱" class="name" />
+        </div>
+        <div class="product-price">
+          <div class="sale-price">
+            <span>商品售價</span>
+          </div>
 
-        <div class="size">
-          <!-- <div class="form-input">
-            <div class="select">
-              <select name="select-list" @change="selectSize($event)" class="select-list">
-                <option value disabled selected>選擇大小</option>
-                <option v-for="size in sizes" :key="size.id" :value="size.id">{{size.size}}</option>
-              </select>
-            </div>|
-            <input type="text" id="s" placeholder="請輸入金額" class="input" />
-          </div>-->
-          <div v-for="data in sizeInputArray" :key="data.index">
-            <div class="form-input">
-              <div class="select">
-                <select
-                  name="select-list"
-                  @change="selectSize($event)"
-                  class="select-list"
+          <div class="size">
+            <div v-for="(data,index) in sizeInputArray" :key="index">
+              <div class="form-input">
+                <div class="select">
+                  <select
+                    name="select-list"
+                    @change="selectSize($event)"
+                    class="select-list"
+                    :data-index="data.index"
+                    :value="selectArray[index].selectSizeId"
+                  >
+                    <option value="0" disabled selected>選擇大小</option>
+                    <option v-for="size in data.sizes" :key="size.id" :value="size.id">{{size.size}}</option>
+                  </select>
+                </div>|
+                <input
+                  type="number"
+                  name="price"
+                  placeholder="請輸入金額"
+                  class="input"
+                  @input="input($event)"
                   :data-index="data.index"
-                >
-                  <option value disabled selected>選擇大小</option>
-                  <option v-for="size in data.sizes" :key="size.id" :value="size.id">{{size.size}}</option>
-                </select>
-              </div>|
-              <input type="text" placeholder="請輸入金額" class="input" />
+                  :value="sizeInputArray[index].price"
+                />
+                <span>元</span>
+              </div>
+            </div>
+            <div>
+              <font-awesome-icon :icon="['fa', 'plus-circle']" class="icon" @click="addSize" />
             </div>
           </div>
-          <div>
-            <font-awesome-icon :icon="['fa', 'plus-circle']" class="icon" @click="addSize" />
-          </div>
-          <div class="form-input">
-            <label for="s" class="label">7cm</label> |
-            <input type="text" id="s" placeholder="請輸入" class="input" />
-          </div>
-          <div class="form-input">
-            <label for="m" class="label">6吋</label> |
-            <input type="text" id="m" placeholder="請輸入" class="input" />
-          </div>
-          <div class="form-input">
-            <label for="l" class="label">8吋</label> |
-            <input type="text" id="l" placeholder="請輸入" class="input" />
-          </div>
+        </div>
+        <div>
+          <textarea
+            placeholder="請在100字內描述商品特色"
+            name="description"
+            class="product-description"
+            rows="5"
+            v-model="description"
+          />
+        </div>
+        <div class="create-button">
+          <button type="submit">上架商品</button>
         </div>
       </div>
-      <div>
-        <textarea placeholder="請在100字內描述商品特色" class="product-description" rows="5" />
-      </div>
-      <div class="create-button">
-        <div @click.stop.prevent="goToNextStep">上架商品</div>
-      </div>
-    </div>
+    </form>
     <!-- <BottomBar :page-name="name" /> -->
   </div>
 </template>
@@ -97,14 +94,25 @@ export default {
       name: "",
       title: "新增商品",
       buttonType: "add",
-      image: ""
+      image: "",
+      description: "",
+      formData: new FormData()
     };
   },
   created() {
     this.fetchSizes();
+    if (Number(this.$route.params.id) > 0) {
+      const { id: productId } = this.$route.params;
+      this.fetchProduct(productId);
+    }
+  },
+  beforeRouteUpdate(to, from, next) {
+    const { id: productId } = to.params;
+    this.fetchProduct(productId);
+    next();
   },
   methods: {
-    async fetchSizes(req, res) {
+    async fetchSizes() {
       try {
         const { data, statusText } = await ProductAPI.getSizes();
 
@@ -118,6 +126,13 @@ export default {
       }
     },
     fileSelected(event) {
+      console.log(event.target.files[0]);
+
+      this.formData.append("file", event.target.files[0]);
+
+      console.log(this.formData);
+
+      //immediately show image
       const file = event.target.files.item(0);
       const reader = new FileReader();
       reader.addEventListener("load", e => {
@@ -196,13 +211,101 @@ export default {
       //original version
       this.sizeInputArray.push({
         index: this.sizeInputCount,
-        sizes: this.sizes
+        sizes: this.sizes,
+        price: ""
       });
 
       this.selectArray.push({
         selectId: this.sizeInputCount,
         selectSizeId: 0
       });
+    },
+    input(event) {
+      const selectIndexInArray = event.currentTarget.dataset.index - 1;
+
+      this.selectArray[selectIndexInArray].price = event.currentTarget.value;
+    },
+    async submit(e) {
+      try {
+        const form = new FormData(e.target);
+
+        this.selectArray.forEach(a => {
+          const json = JSON.stringify(a);
+          form.append("sizeArray", json);
+        });
+
+        const { data, statusText } = await ProductAPI.createProduct(form);
+
+        if (data.status !== "success" || statusText !== "OK") {
+          throw new Error(statusText);
+        }
+
+        this.$router.push({ name: "products" });
+      } catch (error) {
+        console.log("err", error);
+      }
+    },
+    async fetchProduct(productId) {
+      try {
+        const { data, statusText } = await ProductAPI.getProduct({ productId });
+
+        if (statusText !== "OK") {
+          throw new Error();
+        }
+
+        const { name, description, image } = data;
+
+        this.name = name;
+        this.description = description;
+        this.image = image;
+
+        const sizesArray = data.sizes;
+
+        for (let i = 0; i < sizesArray.length; i++) {
+          this.sizeInputCount = i + 1;
+
+          this.sizeInputArray.push({
+            index: this.sizeInputCount,
+            sizes: this.sizes,
+            price: sizesArray[i].ProductSize.price
+          });
+
+          this.selectArray.push({
+            selectId: this.sizeInputCount,
+            selectSizeId: sizesArray[i].id
+          });
+
+          this.selectArray.forEach(select => {
+            this.sizeInputArray = this.sizeInputArray.map(input => {
+              if (Number(input.index) !== Number(select.selectId)) {
+                const filter = input.sizes.filter(a => {
+                  if (Number(a.id) !== Number(select.selectSizeId)) {
+                    return a;
+                  }
+                });
+                return (input = {
+                  ...input,
+                  sizes: filter
+                });
+              } else {
+                return (input = {
+                  ...input
+                });
+              }
+            });
+          });
+        }
+
+        this.selectArray.forEach(select => {
+          this.sizes = this.sizes.filter(size => {
+            if (Number(select.selectSizeId) !== Number(size.id)) {
+              return size;
+            }
+          });
+        });
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 };
@@ -216,6 +319,12 @@ $blue: #17205b;
 $black: #252b3c;
 $grey: #919191;
 $white: #e5e5e5;
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
 .product-create {
   height: 100vh;
@@ -262,6 +371,10 @@ $white: #e5e5e5;
     margin: 5% 10%;
     background-color: #ffffff;
 
+    .size {
+      padding-bottom: 20px;
+    }
+
     .icon {
       font-size: 35px;
     }
@@ -274,7 +387,11 @@ $white: #e5e5e5;
     .form-input {
       padding: 3%;
       display: grid;
-      grid-template-columns: 49% 2% 49%;
+      grid-template-columns: 49% 2% 25% 24%;
+
+      span {
+        text-align: left;
+      }
 
       .select {
         text-align: right;
