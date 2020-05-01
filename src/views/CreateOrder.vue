@@ -1,25 +1,45 @@
 <template>
   <div class="create-order">
     <TopBar :page-title="title" :button-type="buttonType" />
-    <form action="" method="post">
+    <form @submit.prevent.stop="handleSubmit">
       <div class="wrapper">
         <div v-show="step === 'one'">
           <div class="customer-info">
             <div class="form-title">訂購人</div>
             <div>
-              <input type="text" placeholder="輸入姓名" />
+              <input
+                v-model="booking_name"
+                type="text"
+                name="booking_name"
+                placeholder="輸入姓名"
+              />
             </div>
             <div>
-              <input type="text" placeholder="輸入電話號碼" />
+              <input
+                v-model="booking_phone"
+                type="text"
+                name="booking_phone"
+                placeholder="輸入電話號碼"
+              />
             </div>
           </div>
           <div class="recipient-info">
             <div class="form-title">收件人</div>
             <div>
-              <input type="text" placeholder="輸入姓名" />
+              <input
+                v-model="recipient_name"
+                type="text"
+                name="recipient_name"
+                placeholder="輸入姓名"
+              />
             </div>
             <div>
-              <input type="text" placeholder="輸入電話號碼" />
+              <input
+                v-model="recipient_phone"
+                type="text"
+                name="recipient_phone"
+                placeholder="輸入電話號碼"
+              />
             </div>
             <div class="form-title">選擇取貨日期與時間</div>
             <div class="calender-wrapper">
@@ -27,11 +47,25 @@
                 :icon="['fas', 'calendar-alt']"
                 class="calender"
               />
-              <input type="date" name="date" id="date" class="date" />
+              <input
+                v-model="pickup_date"
+                type="date"
+                name="pickup_date"
+                id="date"
+                class="date"
+                value=""
+              />
             </div>
             <div class="calender-wrapper">
               <font-awesome-icon :icon="['fas', 'clock']" class="calender" />
-              <input type="time" name="time" id="time" class="time" />
+              <input
+                v-model="pickup_time"
+                type="time"
+                name="pickup_time"
+                id="time"
+                class="time"
+                value="14:00"
+              />
             </div>
           </div>
           <div class="product-delivery">
@@ -51,6 +85,7 @@
             </div>
             <div v-show="product_delivery === 'home'">
               <input
+                v-model="address"
                 type="text"
                 name="address"
                 class="address"
@@ -91,34 +126,54 @@
             </thead>
             <tbody>
               <tr v-for="orderProduct in orderProducts" :key="orderProduct.id">
-                <td class="product-name">{{ orderProduct.name }}</td>
+                <td class="product-name">{{ orderProduct[0].name }}</td>
                 <td class="product-size">
-                  <select name="" :id="orderProduct.id">
+                  <select
+                    @change="handleSizeChange($event, orderProduct.orderId)"
+                    v-model="orderProduct.chosenSize"
+                  >
                     <option
-                      v-for="size in orderProduct.sizes"
-                      value="7cm"
+                      v-for="size in orderProduct[0].sizes"
+                      :value="size.id"
                       :key="size.ProductSize.id"
                       >{{ size.size }}</option
                     >
                   </select>
                 </td>
                 <td class="product-quantity">
-                  <input type="number" name="" id="" min="1" value="1" />
+                  <input
+                    type="number"
+                    :value="orderProduct.quantity"
+                    min="1"
+                    @input="handleQuantityChange($event, orderProduct.orderId)"
+                  />
                 </td>
-                <td class="product-price">80</td>
+                <td class="product-price">
+                  {{
+                    orderProduct[0].sizes[orderProduct.chosenSize - 1]
+                      .ProductSize.price
+                  }}
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
         <div class="note-area">
-          <input type="text" placeholder="訂單備註" />
+          <input
+            type="text"
+            name="note"
+            v-model="note"
+            placeholder="訂單備註"
+          />
         </div>
         <div class="btn-group">
           <div class="last">
             <div @click.stop.prevent="goToNextStep">上一步</div>
           </div>
           <div class="create-button">
-            <div @click.stop.prevent="goToNextStep">成立訂單</div>
+            <button :disabled="isProcessing" type="submit">
+              成立訂單
+            </button>
           </div>
         </div>
       </div>
@@ -129,7 +184,17 @@
 <script>
 import TopBar from './../components/TopBar'
 import BottomBar from './../components/BottomBar'
-import productsAPI from '../apis/products'
+import productAPI from '../apis/products'
+import orderAPI from '../apis/orders'
+import { Toast } from './../utils/helpers'
+
+const today = new Date()
+const year = today.getFullYear()
+const month =
+  today.getMonth() + 1 < 10 ? `0${today.getMonth() + 1}` : today.getMonth() + 1
+const defaultDay =
+  today.getDate() + 1 < 10 ? `0${today.getDate() + 1}` : today.getDate() + 1
+const formatDate = `${year}-${month}-${defaultDay}`
 
 export default {
   name: 'create-order',
@@ -143,15 +208,21 @@ export default {
       products: [],
       inputValue: '',
       matchProducts: [],
-      customer_name: '',
-      customer_phone: '',
+      ///// order info /////
+      booking_name: '',
+      booking_phone: '',
       recipient_name: '',
       recipient_phone: '',
       address: '',
       note: '',
-      pickup_time: '',
+      pickup_date: formatDate,
+      pickup_time: '14:00',
       product_delivery: 'self',
-      orderProducts: []
+      orderProducts: [],
+      amount: 0,
+      shipping_fee: 160,
+      //////////////////////
+      isProcessing: false
     }
   },
   created() {
@@ -160,7 +231,7 @@ export default {
   methods: {
     async fetchProducts() {
       try {
-        const response = await productsAPI.getProducts()
+        const response = await productAPI.getProducts()
         const { data, statusText } = response
         if (statusText !== 'OK') throw new Error(statusText)
         this.products = data
@@ -188,19 +259,112 @@ export default {
       let orderProduct = this.products.filter(product => {
         return product.id == productId
       })
-      this.orderProducts.push(...orderProduct)
+
+      this.orderProducts.push({
+        ...orderProduct,
+        orderId: this.orderProducts.length,
+        quantity: 1,
+        chosenSize: '1'
+      })
+    },
+    handleSizeChange(event, target_id) {
+      this.orderProducts.filter(item => {
+        if (item.orderId == target_id) {
+          return (item.chosenSize = event.target.value)
+        }
+      })
+    },
+    handleQuantityChange(event, target_id) {
+      this.orderProducts.filter(item => {
+        if (item.orderId == target_id) {
+          return (item.quantity = event.target.value)
+        }
+      })
+    },
+    async handleSubmit(e) {
+      try {
+        const perOrderItemTotal = this.orderProducts.map(
+          product =>
+            product[0].sizes[product.chosenSize - 1].ProductSize.price *
+            Number(product.quantity)
+        )
+        this.amount = perOrderItemTotal.reduce((a, b) => a + b)
+
+        if (this.amount <= 1500) {
+          this.shipping_fee = 160
+        } else if (this.amount > 1500 && this.amount < 3000) {
+          this.shipping_fee = 225
+        } else {
+          this.shipping_fee = 0
+        }
+
+        const orderItems = this.orderProducts.map(item => {
+          const sizeIndex = item[0].sizes.filter(s => {
+            return s.id == item.chosenSize
+          })
+          return {
+            ProductSizeId: sizeIndex[0].ProductSize.id,
+            quantity: item.quantity
+          }
+        })
+        if (
+          !this.recipient_name ||
+          !this.recipient_phone ||
+          !this.pickup_date ||
+          !this.pickup_time ||
+          !this.booking_name ||
+          !this.booking_phone ||
+          (this.product_delivery === 'home' && !this.address) ||
+          this.orderProducts.length < 1
+        ) {
+          Toast.fire({
+            type: 'warning',
+            title: '訂單的所有資訊皆是必填。'
+          })
+          return
+        }
+        this.isProcessing = true
+        const formData = {
+          booking_name: this.booking_name,
+          booking_phone: this.booking_phone,
+          recipient_name: this.recipient_name,
+          recipient_phone: this.recipient_phone,
+          pickup_date: this.pickup_date,
+          pickup_time: this.pickup_time,
+          product_delivery: this.product_delivery,
+          order_items: orderItems,
+          shipping_fee: this.shipping_fee,
+          amount: this.amount,
+          address: this.address,
+          note: this.note
+        }
+        const response = await orderAPI.postOrder({ formData })
+        const { data, statusText } = response
+        if (statusText !== 'OK' || data.status !== 'success')
+          throw new Error(statusText)
+        this.$router.push({ name: 'order', params: { id: data.orderId } })
+      } catch (error) {
+        console.log('error', error)
+        this.isProcessing = false
+      }
     }
   }
 }
 </script>
 <style lang="scss" scoped>
 $bgColor: #ebf3f5;
-$green: #34a94e;
+$green: #5fd399;
 $red: #e23737;
 $blue: #17205b;
 $black: #252b3c;
 $grey: #5e6162;
 $white: #e5e5e5;
+
+button:disabled,
+button[disabled] {
+  background-color: rgba(23, 27, 38, 0.82);
+  color: #666666;
+}
 
 th.container > div {
   width: 100%;
@@ -355,7 +519,7 @@ td {
   justify-content: space-between;
   margin-top: 20px;
   .create-button {
-    div {
+    button {
       background-color: $black;
       color: $white;
       border-radius: 5px;
