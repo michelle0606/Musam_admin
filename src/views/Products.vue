@@ -35,8 +35,6 @@ export default {
           throw new Error(statusText);
         }
 
-        console.log(data);
-
         this.products = data.map(product => {
           let mainPic = "";
 
