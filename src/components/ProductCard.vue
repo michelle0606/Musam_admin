@@ -12,7 +12,7 @@
             <div class="circle-red"></div>
           </div>
           <div class="product-image">
-            <img class="image" :src="product.image" />
+            <img class="image" :src="product.mainPic" />
           </div>
           <div class="product-name">
             <span class="name">{{ product.name }}</span>
@@ -28,10 +28,10 @@ export default {
   props: {
     products: {
       type: Array,
-      required: true,
-    },
-  },
-}
+      required: true
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>

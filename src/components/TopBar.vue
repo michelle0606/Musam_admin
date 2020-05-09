@@ -11,9 +11,11 @@
     <div v-if="button === 'add'" class="type-two">
       <div v-if="title === '未完成訂單'" class="add">
         <div class="title">{{ title }}</div>
-        <router-link :to="{ name: 'create-order' }">
-          ＋
-        </router-link>
+        <router-link :to="{ name: 'create-order' }">＋</router-link>
+      </div>
+      <div v-else-if="title === '商品管理'" class="add">
+        <div class="title">{{ title }}</div>
+        <router-link :to="{ name: 'product-create' }">＋</router-link>
       </div>
     </div>
   </div>
@@ -35,9 +37,9 @@ export default {
     return {
       title: this.pageTitle,
       button: this.buttonType
-    }
+    };
   }
-}
+};
 </script>
 
 <style lang="scss">
