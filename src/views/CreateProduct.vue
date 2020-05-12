@@ -102,13 +102,23 @@
           v-model="description"
         />
       </div>
-      <div class="create-button">
-        <div v-if="productId" @click="edit">確定編輯</div>
-        <div v-else @click="submit">上架商品</div>
+      <div>
+        <div v-if="productId" class="product-bottom-bar">
+          <div class="create-button" @click="edit">確定編輯</div>
+
+          <div
+            v-if="status === 'on'"
+            class="status-change-button"
+            @click="statusChange(productId)"
+          >下架商品</div>
+          <div v-else @click="statusChange(productId)" class="status-change-button">上架商品</div>
+        </div>
+
+        <div v-else @click="submit" class="create-button">上架商品</div>
       </div>
     </div>
 
-    <!-- <BottomBar :page-name="name" /> -->
+    <BottomBar :page-name="name" />
   </div>
 </template>
 
@@ -123,7 +133,10 @@ export default {
 
   data() {
     return {
+      title: "商品",
+      buttonType: "back",
       productId: "",
+      status: "",
       sizeRawData: [],
       sizes: [],
       selectArray: [],
@@ -351,10 +364,11 @@ export default {
           throw new Error();
         }
 
-        const { name, description } = data;
+        const { name, description, status } = data;
 
         this.name = name;
         this.description = description;
+        this.status = status;
 
         for (let i = 0; i < data.Images.length; i++) {
           this.images.push(data.Images[i].image);
@@ -479,6 +493,21 @@ export default {
         const { data, statusText } = await ProductAPI.putProduct({
           productId: this.productId,
           formData: this.formData
+        });
+
+        if (data.status !== "success" || statusText !== "OK") {
+          throw new Error(statusText);
+        }
+
+        this.$router.push({ name: "products" });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async statusChange(productId) {
+      try {
+        const { data, statusText } = await ProductAPI.changeProductStatus({
+          productId
         });
 
         if (data.status !== "success" || statusText !== "OK") {
@@ -626,21 +655,38 @@ input::-webkit-inner-spin-button {
     font-size: 100%;
     width: 100%;
   }
-  .create-button {
-    div {
-      background-color: #5fd399;
-      color: $white;
-      border-radius: 5px;
-      font-size: 16px;
-      width: 100px;
-      height: 40px;
-      margin: 15px auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-    }
-  }
+}
+
+.product-bottom-bar {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+.create-button {
+  background-color: #5fd399;
+  color: $white;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 100px;
+  height: 40px;
+  margin: 15px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.status-change-button {
+  background-color: $red;
+  color: $white;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 100px;
+  height: 40px;
+  margin: 15px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
 }
 
 .select-main-pic {

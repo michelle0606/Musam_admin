@@ -16,5 +16,8 @@ export default {
   },
   putProduct({ productId, formData }) {
     return apiHelper.put(`/admin/product/${productId}`, formData)
+  },
+  changeProductStatus({ productId }) {
+    return apiHelper.post(`/admin/product/status/${productId}`)
   }
 }

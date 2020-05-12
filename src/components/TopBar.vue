@@ -7,6 +7,12 @@
         </router-link>
         <div class="title">{{ title }}</div>
       </div>
+      <div v-else-if="title === '商品'">
+        <router-link :to="{ name: 'products' }">
+          <font-awesome-icon :icon="['fas', 'arrow-left']" />
+        </router-link>
+        <div class="title">{{ title }}</div>
+      </div>
     </div>
     <div v-if="button === 'add'" class="type-two">
       <div v-if="title === '未完成訂單'" class="add">
