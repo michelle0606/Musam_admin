@@ -71,7 +71,7 @@
         </div>
       </div>
     </form>
-    <!-- <BottomBar :page-name="name" /> -->
+    <BottomBar :page-name="PageName" />
   </div>
 </template>
 
@@ -85,6 +85,7 @@ export default {
 
   data() {
     return {
+      PageName: "新增商品",
       sizeRawData: [],
       sizes: [],
       selectArray: [],
@@ -93,7 +94,7 @@ export default {
       key: "請選擇",
       name: "",
       title: "新增商品",
-      buttonType: "add",
+      buttonType: "back",
       image: "",
       description: "",
       formData: new FormData()
