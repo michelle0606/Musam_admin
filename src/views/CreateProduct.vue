@@ -116,9 +116,8 @@
 
         <div v-else @click="submit" class="create-button">上架商品</div>
       </div>
-    </div>
-
-    <BottomBar :page-name="name" />
+    </form>
+    <BottomBar :page-name="PageName" />
   </div>
 </template>
 
@@ -133,10 +132,7 @@ export default {
 
   data() {
     return {
-      title: "商品",
-      buttonType: "back",
-      productId: "",
-      status: "",
+      PageName: "新增商品",
       sizeRawData: [],
       sizes: [],
       selectArray: [],
@@ -145,7 +141,7 @@ export default {
       key: "請選擇",
       name: "",
       title: "新增商品",
-      buttonType: "add",
+      buttonType: "back",
       image: "",
       description: "",
       formData: new FormData(),
