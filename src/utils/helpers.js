@@ -2,7 +2,8 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 
 
-const baseURL = 'http://localhost:3000'
+const baseURL = 'https://musam-server.herokuapp.com'
+
 
 
 export const apiHelper = axios.create({

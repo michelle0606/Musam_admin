@@ -22,6 +22,7 @@
       <div v-else-if="title === '商品管理'" class="add">
         <div class="title">{{ title }}</div>
         <router-link :to="{ name: 'product-create' }">＋</router-link>
+
       </div>
     </div>
   </div>
