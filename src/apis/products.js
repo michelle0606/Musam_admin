@@ -13,5 +13,11 @@ export default {
   },
   getProduct({ productId }) {
     return apiHelper.get(`/product/${productId}`)
+  },
+  putProduct({ productId, formData }) {
+    return apiHelper.put(`/admin/product/${productId}`, formData)
+  },
+  changeProductStatus({ productId }) {
+    return apiHelper.post(`/admin/product/status/${productId}`)
   }
 }
