@@ -3,7 +3,7 @@ import { apiHelper } from './../utils/helpers'
 
 export default {
   getProducts() {
-    return apiHelper.get('/products')
+    return apiHelper.get('/admin/products')
   },
   getSizes() {
     return apiHelper.get('/admin/sizes')

@@ -116,8 +116,8 @@
 
         <div v-else @click="submit" class="create-button">上架商品</div>
       </div>
-    </form>
-    <BottomBar :page-name="PageName" />
+      <BottomBar :page-name="PageName" />
+    </div>
   </div>
 </template>
 
