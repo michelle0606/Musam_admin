@@ -22,6 +22,7 @@
                 class="file"
                 @change="fileSelected"
                 multiple="multiple"
+                accept=".jpeg, .jpg, .png"
               />
             </div>
           </label>
@@ -132,6 +133,7 @@ export default {
 
   data() {
     return {
+      productId: "",
       PageName: "新增商品",
       sizeRawData: [],
       sizes: [],
@@ -360,8 +362,9 @@ export default {
           throw new Error();
         }
 
-        const { name, description, status } = data;
+        const { name, description, status, id } = data;
 
+        this.productId = id;
         this.name = name;
         this.description = description;
         this.status = status;
