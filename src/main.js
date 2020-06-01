@@ -14,7 +14,9 @@ import {
   faClock,
   faImage,
   faPlusCircle,
+
   faTimesCircle
+
 } from '@fortawesome/free-solid-svg-icons'
 import { faAddressBook, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -32,6 +34,14 @@ library.add(
   faPlusCircle,
   faTimesCircle
 )
+
+import BottomBar from './components/BottomBar'
+import TopBar from './components/TopBar.vue'
+import Spinner from './components/Spinner'
+
+Vue.component('TopBar', TopBar)
+Vue.component('Spinner', Spinner)
+Vue.component('BottomBar', BottomBar)
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 
 Vue.config.productionTip = false
@@ -39,5 +49,5 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App),
 }).$mount('#app')

@@ -53,7 +53,7 @@
                 name="pickup_date"
                 id="date"
                 class="date"
-                value=""
+                value
               />
             </div>
             <div class="calender-wrapper">
@@ -119,10 +119,18 @@
         <div class="showup-area">
           <table class="order-table">
             <thead>
-              <th class="container"><div>名稱</div></th>
-              <th class="container"><div>尺寸</div></th>
-              <th class="container"><div>數量</div></th>
-              <th class="container"><div>單價</div></th>
+              <th class="container">
+                <div>名稱</div>
+              </th>
+              <th class="container">
+                <div>尺寸</div>
+              </th>
+              <th class="container">
+                <div>數量</div>
+              </th>
+              <th class="container">
+                <div>單價</div>
+              </th>
             </thead>
             <tbody>
               <tr v-for="orderProduct in orderProducts" :key="orderProduct.id">
@@ -171,9 +179,7 @@
             <div @click.stop.prevent="goToNextStep">上一步</div>
           </div>
           <div class="create-button">
-            <button :disabled="isProcessing" type="submit">
-              成立訂單
-            </button>
+            <button :disabled="isProcessing" type="submit">成立訂單</button>
           </div>
         </div>
       </div>
@@ -182,8 +188,6 @@
   </div>
 </template>
 <script>
-import TopBar from './../components/TopBar'
-import BottomBar from './../components/BottomBar'
 import productAPI from '../apis/products'
 import orderAPI from '../apis/orders'
 import { Toast } from './../utils/helpers'
@@ -198,7 +202,6 @@ const formatDate = `${year}-${month}-${defaultDay}`
 
 export default {
   name: 'create-order',
-  components: { TopBar, BottomBar },
   data() {
     return {
       name: this.$options.name,
@@ -222,7 +225,7 @@ export default {
       amount: 0,
       shipping_fee: 160,
       //////////////////////
-      isProcessing: false
+      isProcessing: false,
     }
   },
   created() {
@@ -235,6 +238,7 @@ export default {
         const { data, statusText } = response
         if (statusText !== 'OK') throw new Error(statusText)
         this.products = data
+        console.log('data', data)
       } catch (error) {
         console.log('err', error)
       }
@@ -249,14 +253,14 @@ export default {
     },
     findMatch() {
       this.inputValue = event.target.value
-      this.matchProducts = this.products.filter(product => {
+      this.matchProducts = this.products.filter((product) => {
         return product.name.match(this.inputValue)
       })
     },
     addProduct(productId) {
       this.inputValue = ''
       this.matchProducts = []
-      let orderProduct = this.products.filter(product => {
+      let orderProduct = this.products.filter((product) => {
         return product.id == productId
       })
 
@@ -264,18 +268,18 @@ export default {
         ...orderProduct,
         orderId: this.orderProducts.length,
         quantity: 1,
-        chosenSize: '1'
+        chosenSize: '1',
       })
     },
     handleSizeChange(event, target_id) {
-      this.orderProducts.filter(item => {
+      this.orderProducts.filter((item) => {
         if (item.orderId == target_id) {
           return (item.chosenSize = event.target.value)
         }
       })
     },
     handleQuantityChange(event, target_id) {
-      this.orderProducts.filter(item => {
+      this.orderProducts.filter((item) => {
         if (item.orderId == target_id) {
           return (item.quantity = event.target.value)
         }
@@ -284,7 +288,7 @@ export default {
     async handleSubmit(e) {
       try {
         const perOrderItemTotal = this.orderProducts.map(
-          product =>
+          (product) =>
             product[0].sizes[product.chosenSize - 1].ProductSize.price *
             Number(product.quantity)
         )
@@ -298,13 +302,13 @@ export default {
           this.shipping_fee = 0
         }
 
-        const orderItems = this.orderProducts.map(item => {
-          const sizeIndex = item[0].sizes.filter(s => {
+        const orderItems = this.orderProducts.map((item) => {
+          const sizeIndex = item[0].sizes.filter((s) => {
             return s.id == item.chosenSize
           })
           return {
             ProductSizeId: sizeIndex[0].ProductSize.id,
-            quantity: item.quantity
+            quantity: item.quantity,
           }
         })
         if (
@@ -319,7 +323,7 @@ export default {
         ) {
           Toast.fire({
             type: 'warning',
-            title: '訂單的所有資訊皆是必填。'
+            title: '訂單的所有資訊皆是必填。',
           })
           return
         }
@@ -336,7 +340,7 @@ export default {
           shipping_fee: this.shipping_fee,
           amount: this.amount,
           address: this.address,
-          note: this.note
+          note: this.note,
         }
         const response = await orderAPI.postOrder({ formData })
         const { data, statusText } = response
@@ -347,8 +351,8 @@ export default {
         console.log('error', error)
         this.isProcessing = false
       }
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

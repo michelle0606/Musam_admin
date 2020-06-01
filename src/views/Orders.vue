@@ -23,10 +23,10 @@
     </form>
     <Spinner v-if="isLoading" />
     <div class="orderOrCount" v-else>
-      <div v-if="state === 'order'" @click.stop.prevent="changeState">
+      <div v-if="state === 'order'" @click.stop.prevent="state = 'count'">
         產品數量統計
       </div>
-      <div v-if="state === 'count'" @click.stop.prevent="changeState">
+      <div v-if="state === 'count'" @click.stop.prevent="state = 'order'">
         瀏覽未完成訂單
       </div>
     </div>
@@ -41,19 +41,25 @@
       </div>
     </div>
     <div class="total-products" v-if="state === 'count'">
-      產品數量統計
+      <div class="order-items">
+        <table class="order-table">
+          <tbody>
+            <tr v-for="item in result" :key="item.ProductSizeId">
+              <td>{{ item.quantity }} x</td>
+              <td>{{ item.size }} {{ item.name }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <BottomBar :page-name="name" />
   </div>
 </template>
 
 <script>
-import BottomBar from './../components/BottomBar'
-import TopBar from './../components/TopBar'
 import OrderCard from './../components/OrderCard'
 import orderAPI from '../apis/orders'
 import { Toast } from './../utils/helpers'
-import Spinner from './../components/Spinner'
 
 //////// date setting ////////
 const today = new Date()
@@ -70,38 +76,24 @@ const formatEndDate = `${year}-${month}-${endDay}`
 
 export default {
   name: 'orders',
-  components: { BottomBar, TopBar, OrderCard, Spinner },
+  components: { OrderCard },
   data() {
     return {
       name: this.$options.name,
       title: '未完成訂單',
       buttonType: 'add',
-      start: formatStartDate,
-      end: formatEndDate,
+      start: '2020-05-29',
+      end: '2020-05-31',
       state: 'order',
       orders: [],
-      isLoading: true
+      isLoading: true,
+      result: [],
     }
   },
   created() {
     this.handleDateChange()
   },
   methods: {
-    // async fetchOrders() {
-    //   try {
-    //     const response = await orderAPI.getOrders()
-    //     const { data, statusText } = response
-    //     if (statusText !== 'OK') throw new Error(statusText)
-    //     this.orders = data
-    //     this.isLoading = false
-    //   } catch (error) {
-    //     this.isLoading = false
-    //     Toast.fire({
-    //       type: 'error',
-    //       title: '無法取得訂單資訊，請稍後再試'
-    //     })
-    //   }
-    // },
     async handleDateChange(e) {
       try {
         if (e) {
@@ -120,25 +112,58 @@ export default {
 
         const ordersDate = {
           startDate: this.start,
-          endDate: this.end
+          endDate: this.end,
         }
         const response = await orderAPI.getOrders({ ordersDate })
         const { data, statusText } = response
         if (statusText !== 'OK') throw new Error(statusText)
         this.orders = data
         this.isLoading = false
+        this.calculator()
       } catch (error) {
         this.isLoading = false
         Toast.fire({
           type: 'error',
-          title: '無法取得訂單資訊，請稍後再試'
+          title: '無法取得訂單資訊，請稍後再試',
         })
       }
     },
-    changeState() {
-      this.state = this.state === 'order' ? 'count' : 'order'
-    }
-  }
+    calculator() {
+      const newArr = []
+
+      const targetData = this.orders.forEach((order) => {
+        newArr.push(order.items)
+      })
+      const concatArr = newArr.reduce(function(a, b) {
+        return a.concat(b)
+      }, [])
+
+      const mapArr = concatArr.map((item) => {
+        return {
+          ProductSizeId: item.OrderItem.ProductSizeId,
+          name: item.Product.name,
+          size: item.Size.size,
+          quantity: item.OrderItem.quantity,
+        }
+      })
+
+      const hash = {}
+      const result = []
+      mapArr.forEach(function(item) {
+        var id = item['ProductSizeId']
+        if (hash[id]) {
+          hash[id].quantity = hash[id].quantity + item.quantity
+        } else {
+          result.push(
+            (hash[id] = {
+              ...item,
+            })
+          )
+        }
+      })
+      this.result = result
+    },
+  },
 }
 </script>
 
@@ -176,6 +201,22 @@ $white: #e5e5e5;
       padding: 10px;
       text-align: center;
       font-weight: 200;
+    }
+  }
+  .order-items {
+    background-color: #fff;
+    padding: 10px 0px;
+    .order-table {
+      margin: auto;
+      font-size: 16px;
+      tbody {
+        tr {
+          display: block;
+          width: 245px;
+          overflow: scroll;
+          white-space: nowrap;
+        }
+      }
     }
   }
 }

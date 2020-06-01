@@ -50,6 +50,7 @@
             <div class="image" @click="setMainPic">
               <img :src="image" width="100%" :data-index="index" />
             </div>
+
           </div>
         </div>
       </div>
@@ -86,6 +87,7 @@
                 :value="sizeInputArray[index].price"
               />
               <span>元</span>
+
             </div>
           </div>
           <div>
@@ -127,9 +129,8 @@ import TopBar from "./../components/TopBar";
 import ProductAPI from "../apis/products";
 import { Toast } from "./../utils/helpers";
 
-export default {
-  components: { BottomBar, TopBar },
 
+export default {
   data() {
     return {
       PageName: "新增商品",
@@ -152,32 +153,33 @@ export default {
     };
   },
   created() {
-    this.fetchSizes();
+    this.fetchSizes()
     if (Number(this.$route.params.id) > 0) {
-      const { id: productId } = this.$route.params;
-      this.fetchProduct(productId);
+      const { id: productId } = this.$route.params
+      this.fetchProduct(productId)
     }
   },
   beforeRouteUpdate(to, from, next) {
-    const { id: productId } = to.params;
-    this.fetchProduct(productId);
-    next();
+    const { id: productId } = to.params
+    this.fetchProduct(productId)
+    next()
   },
   methods: {
     async fetchSizes() {
       try {
-        const { data, statusText } = await ProductAPI.getSizes();
+        const { data, statusText } = await ProductAPI.getSizes()
 
-        if (statusText !== "OK") {
-          throw new Error(statusText);
+        if (statusText !== 'OK') {
+          throw new Error(statusText)
         }
-        this.sizes = data;
-        this.sizeRawData = data;
+        this.sizes = data
+        this.sizeRawData = data
       } catch (error) {
-        console.log("err", error);
+        console.log('err', error)
       }
     },
     fileSelected(event) {
+
       //immediately show image
       for (let i = 0; i < event.target.files.length; i++) {
         this.fileArray.push(event.target.files[i]);
@@ -190,88 +192,92 @@ export default {
       }
     },
     selectSize(event) {
-      const selectId = Number(event.currentTarget.dataset.index);
-      const selectValue = Number(event.currentTarget.value);
-      let beChangeValue = 0;
+      const selectId = Number(event.currentTarget.dataset.index)
+      const selectValue = Number(event.currentTarget.value)
+      let beChangeValue = 0
 
       //record every select zone's option value
-      this.selectArray = this.selectArray.map(select => {
-        const singleSelectId = Number(select.selectId);
+      this.selectArray = this.selectArray.map((select) => {
+        const singleSelectId = Number(select.selectId)
         if (singleSelectId !== selectId) {
           return (select = {
-            ...select
-          });
+            ...select,
+          })
         } else {
-          this.sizes = this.sizes.filter(size => {
+          this.sizes = this.sizes.filter((size) => {
             if (size.id !== selectValue) {
-              return size;
+              return size
             }
-          });
+          })
           //original value must be record and return to every select zone's options
-          beChangeValue = select.selectSizeId;
+          beChangeValue = select.selectSizeId
 
           if (beChangeValue !== 0) {
             this.sizes.push(
-              ...this.sizeRawData.filter(size =>
+              ...this.sizeRawData.filter((size) =>
                 Number(size.id) === Number(beChangeValue) ? size : false
               )
-            );
+            )
           }
           return (select = {
             ...select,
             selectId: selectId,
-            selectSizeId: Number(selectValue)
-          });
+            selectSizeId: Number(selectValue),
+          })
         }
-      });
+      })
 
       //Size array filter
-      this.sizeInputArray = this.sizeInputArray.map(input => {
+      this.sizeInputArray = this.sizeInputArray.map((input) => {
         //change other select zone's size options
         if (Number(input.index) !== selectId) {
-          const filter = input.sizes.filter(size => {
+          const filter = input.sizes.filter((size) => {
             if (size.id !== selectValue) {
-              return size;
+              return size
             }
-          });
+          })
 
           if (beChangeValue !== 0) {
             filter.push(
-              ...this.sizeRawData.filter(size =>
+              ...this.sizeRawData.filter((size) =>
                 Number(size.id) === Number(beChangeValue) ? size : false
               )
-            );
+            )
           }
 
           return (input = {
             ...input,
-            sizes: filter
-          });
+            sizes: filter,
+          })
         }
 
         return (input = {
-          ...input
-        });
-      });
+          ...input,
+        })
+      })
     },
     addSize() {
-      this.sizeInputCount = this.sizeInputCount + 1;
+      this.sizeInputCount = this.sizeInputCount + 1
 
       //original version
       this.sizeInputArray.push({
         index: this.sizeInputCount,
         sizes: this.sizes,
-        price: ""
-      });
+        price: '',
+      })
 
       this.selectArray.push({
         selectId: this.sizeInputCount,
         selectSizeId: 0,
+
         price: ""
       });
+
+      })
+
     },
     input(event) {
-      const selectIndexInArray = event.currentTarget.dataset.index - 1;
+      const selectIndexInArray = event.currentTarget.dataset.index - 1
 
       this.selectArray[selectIndexInArray].price = event.currentTarget.value;
       this.sizeInputArray[selectIndexInArray].price = event.currentTarget.value;
@@ -343,22 +349,25 @@ export default {
           this.formData
         );
 
-        if (data.status !== "success" || statusText !== "OK") {
-          throw new Error(statusText);
+    
+
+        if (data.status !== 'success' || statusText !== 'OK') {
+          throw new Error(statusText)
         }
 
-        this.$router.push({ name: "products" });
+        this.$router.push({ name: 'products' })
       } catch (error) {
-        console.log("err", error);
+        console.log('err', error)
       }
     },
     async fetchProduct(productId) {
       try {
-        const { data, statusText } = await ProductAPI.getProduct({ productId });
+        const { data, statusText } = await ProductAPI.getProduct({ productId })
 
-        if (statusText !== "OK") {
-          throw new Error();
+        if (statusText !== 'OK') {
+          throw new Error()
         }
+
 
         const { name, description, status } = data;
 
@@ -373,16 +382,17 @@ export default {
           }
         }
 
-        const sizesArray = data.sizes;
+
+        const sizesArray = data.sizes
 
         for (let i = 0; i < sizesArray.length; i++) {
-          this.sizeInputCount = i + 1;
+          this.sizeInputCount = i + 1
 
           this.sizeInputArray.push({
             index: this.sizeInputCount,
             sizes: this.sizes,
-            price: sizesArray[i].ProductSize.price
-          });
+            price: sizesArray[i].ProductSize.price,
+          })
 
           this.selectArray.push({
             selectId: this.sizeInputCount,
@@ -390,31 +400,33 @@ export default {
             price: sizesArray[i].ProductSize.price
           });
 
-          this.selectArray.forEach(select => {
-            this.sizeInputArray = this.sizeInputArray.map(input => {
+          })
+
+          this.selectArray.forEach((select) => {
+            this.sizeInputArray = this.sizeInputArray.map((input) => {
               if (Number(input.index) !== Number(select.selectId)) {
-                const filter = input.sizes.filter(a => {
+                const filter = input.sizes.filter((a) => {
                   if (Number(a.id) !== Number(select.selectSizeId)) {
-                    return a;
+                    return a
                   }
-                });
+                })
                 return (input = {
                   ...input,
-                  sizes: filter
-                });
+                  sizes: filter,
+                })
               } else {
                 return (input = {
-                  ...input
-                });
+                  ...input,
+                })
               }
-            });
-          });
+            })
+          })
         }
 
-        this.selectArray.forEach(select => {
-          this.sizes = this.sizes.filter(size => {
+        this.selectArray.forEach((select) => {
+          this.sizes = this.sizes.filter((size) => {
             if (Number(select.selectSizeId) !== Number(size.id)) {
-              return size;
+              return size
             }
           });
         });
@@ -511,14 +523,14 @@ export default {
         }
 
         this.$router.push({ name: "products" });
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  }
-};
-</script>
 
+      } catch (err) {
+        console.log(err)
+      }
+    },
+  },
+}
+</script>
 
 <style lang="scss" scoped>
 $green: #34a94e;
