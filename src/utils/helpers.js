@@ -1,15 +1,16 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-const baseURL = 'https://musam-server.herokuapp.com'
+const baseURL = 'https://musamserver.herokuapp.com'
+// const baseURL = 'http://localhost:3000'
 
 export const apiHelper = axios.create({
-  baseURL
+  baseURL,
 })
 
 export const Toast = Swal.mixin({
   toast: true,
   position: 'top-end',
   showConfirmButton: false,
-  timer: 3000
+  timer: 3000,
 })

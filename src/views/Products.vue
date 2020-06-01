@@ -7,42 +7,39 @@
 </template>
 
 <script>
-import BottomBar from "./../components/BottomBar";
-import TopBar from "./../components/TopBar";
-import ProductAPI from "../apis/products";
-import ProductCard from "../components/ProductCard";
+import ProductAPI from '../apis/products'
+import ProductCard from '../components/ProductCard'
 
 export default {
-  components: { BottomBar, TopBar, ProductCard },
+  components: { ProductCard },
 
   data() {
     return {
-      name: "products",
-      title: "商品管理",
+      name: 'products',
+      title: '商品管理',
       products: [],
-      buttonType: "add"
-    };
+      buttonType: 'add',
+    }
   },
   created() {
-    this.fetchProducts();
+    this.fetchProducts()
   },
   methods: {
     async fetchProducts(req, res) {
       try {
-        const { data, statusText } = await ProductAPI.getProducts();
+        const { data, statusText } = await ProductAPI.getProducts()
 
-        if (statusText !== "OK") {
-          throw new Error(statusText);
+        if (statusText !== 'OK') {
+          throw new Error(statusText)
         }
-        this.products = data;
+        this.products = data
       } catch (error) {
-        console.log("err", error);
+        console.log('err', error)
       }
-    }
-  }
-};
+    },
+  },
+}
 </script>
-
 
 <style lang="scss" scoped>
 $green: #34a94e;
