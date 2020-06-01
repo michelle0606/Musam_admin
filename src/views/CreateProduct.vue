@@ -26,14 +26,19 @@
             </div>
           </label>
         </div>
-        <div v-for="(image,index) in images" :key="index">
-          <div v-if="index === mainPicIndex" class="image-square select-main-pic">
+        <div v-for="(image, index) in images" :key="index">
+          <div
+            v-if="index === mainPicIndex"
+            class="image-square select-main-pic"
+          >
             <p
               :icon="['fa', 'times-circle']"
               class="x-icon"
               @click="deleteImage"
               :data-index="index"
-            >☒</p>
+            >
+              ☒
+            </p>
 
             <div class="image" @click="setMainPic">
               <img :src="image" width="100%" :data-index="index" />
@@ -45,17 +50,24 @@
               class="x-icon"
               @click="deleteImage"
               :data-index="index"
-            >☒</p>
+            >
+              ☒
+            </p>
 
             <div class="image" @click="setMainPic">
               <img :src="image" width="100%" :data-index="index" />
             </div>
-
           </div>
         </div>
       </div>
       <div class="product-name">
-        <input type="text" name="name" v-model="name" placeholder="商品名稱" class="name" />
+        <input
+          type="text"
+          name="name"
+          v-model="name"
+          placeholder="商品名稱"
+          class="name"
+        />
       </div>
       <div class="product-price">
         <div class="sale-price">
@@ -63,7 +75,7 @@
         </div>
 
         <div class="size">
-          <div v-for="(data,index) in sizeInputArray" :key="index">
+          <div v-for="(data, index) in sizeInputArray" :key="index">
             <div class="form-input">
               <div class="select">
                 <select
@@ -74,9 +86,15 @@
                   :value="selectArray[index].selectSizeId"
                 >
                   <option value="0" disabled selected>選擇大小</option>
-                  <option v-for="size in data.sizes" :key="size.id" :value="size.id">{{size.size}}</option>
+                  <option
+                    v-for="size in data.sizes"
+                    :key="size.id"
+                    :value="size.id"
+                    >{{ size.size }}</option
+                  >
                 </select>
-              </div>|
+              </div>
+              |
               <input
                 type="number"
                 name="price"
@@ -87,11 +105,14 @@
                 :value="sizeInputArray[index].price"
               />
               <span>元</span>
-
             </div>
           </div>
           <div>
-            <font-awesome-icon :icon="['fa', 'plus-circle']" class="icon" @click="addSize" />
+            <font-awesome-icon
+              :icon="['fa', 'plus-circle']"
+              class="icon"
+              @click="addSize"
+            />
           </div>
         </div>
       </div>
@@ -112,8 +133,16 @@
             v-if="status === 'on'"
             class="status-change-button"
             @click="statusChange(productId)"
-          >下架商品</div>
-          <div v-else @click="statusChange(productId)" class="status-change-button">上架商品</div>
+          >
+            下架商品
+          </div>
+          <div
+            v-else
+            @click="statusChange(productId)"
+            class="status-change-button"
+          >
+            上架商品
+          </div>
         </div>
 
         <div v-else @click="submit" class="create-button">上架商品</div>
@@ -124,33 +153,32 @@
 </template>
 
 <script>
-import BottomBar from "./../components/BottomBar";
-import TopBar from "./../components/TopBar";
-import ProductAPI from "../apis/products";
-import { Toast } from "./../utils/helpers";
-
+import BottomBar from './../components/BottomBar'
+import TopBar from './../components/TopBar'
+import ProductAPI from '../apis/products'
+import { Toast } from './../utils/helpers'
 
 export default {
   data() {
     return {
-      PageName: "新增商品",
+      PageName: '新增商品',
       sizeRawData: [],
       sizes: [],
       selectArray: [],
       sizeInputCount: 0,
       sizeInputArray: [],
-      key: "請選擇",
-      name: "",
-      title: "新增商品",
-      buttonType: "back",
-      image: "",
-      description: "",
+      key: '請選擇',
+      name: '',
+      title: '新增商品',
+      buttonType: 'back',
+      image: '',
+      description: '',
       formData: new FormData(),
       images: [],
       fileArray: [],
       mainPicIndex: 0,
-      delete: []
-    };
+      delete: [],
+    }
   },
   created() {
     this.fetchSizes()
@@ -179,16 +207,15 @@ export default {
       }
     },
     fileSelected(event) {
-
       //immediately show image
       for (let i = 0; i < event.target.files.length; i++) {
-        this.fileArray.push(event.target.files[i]);
-        const file = event.target.files.item(i);
-        const reader = new FileReader();
-        reader.addEventListener("load", e => {
-          this.images.push(e.target.result);
-        });
-        reader.readAsDataURL(file);
+        this.fileArray.push(event.target.files[i])
+        const file = event.target.files.item(i)
+        const reader = new FileReader()
+        reader.addEventListener('load', (e) => {
+          this.images.push(e.target.result)
+        })
+        reader.readAsDataURL(file)
       }
     },
     selectSize(event) {
@@ -270,86 +297,81 @@ export default {
         selectId: this.sizeInputCount,
         selectSizeId: 0,
 
-        price: ""
-      });
-
+        price: '',
       })
-
     },
     input(event) {
       const selectIndexInArray = event.currentTarget.dataset.index - 1
 
-      this.selectArray[selectIndexInArray].price = event.currentTarget.value;
-      this.sizeInputArray[selectIndexInArray].price = event.currentTarget.value;
+      this.selectArray[selectIndexInArray].price = event.currentTarget.value
+      this.sizeInputArray[selectIndexInArray].price = event.currentTarget.value
     },
     deleteImage(e) {
-      const deleteIndex = Number(e.target.dataset.index);
-      this.mainPicIndex = 0;
-      this.delete.push(this.images[deleteIndex]);
-      this.fileArray.splice(deleteIndex, 1);
-      this.images.splice(deleteIndex, 1);
+      const deleteIndex = Number(e.target.dataset.index)
+      this.mainPicIndex = 0
+      this.delete.push(this.images[deleteIndex])
+      this.fileArray.splice(deleteIndex, 1)
+      this.images.splice(deleteIndex, 1)
     },
     setMainPic(e) {
-      this.mainPicIndex = Number(e.target.dataset.index);
+      this.mainPicIndex = Number(e.target.dataset.index)
     },
     async submit(e) {
       try {
         if (this.fileArray.length === 0) {
           Toast.fire({
-            type: "warning",
-            title: "請新增至少一張圖片"
-          });
-          return;
+            type: 'warning',
+            title: '請新增至少一張圖片',
+          })
+          return
         }
         if (!this.name) {
           Toast.fire({
-            type: "warning",
-            title: "請輸入商品名稱"
-          });
-          return;
+            type: 'warning',
+            title: '請輸入商品名稱',
+          })
+          return
         }
         if (this.selectArray.length === 0) {
           Toast.fire({
-            type: "warning",
-            title: "請新增至少一個商品售價"
-          });
-          return;
+            type: 'warning',
+            title: '請新增至少一個商品售價',
+          })
+          return
         }
 
-        this.selectArray.forEach(a => {
+        this.selectArray.forEach((a) => {
           if (a.selectSizeId === 0) {
             Toast.fire({
-              type: "warning",
-              title: "請選擇大小"
-            });
-            return;
+              type: 'warning',
+              title: '請選擇大小',
+            })
+            return
           }
           if (!a.price) {
             Toast.fire({
-              type: "warning",
-              title: "請輸入金額"
-            });
-            return;
+              type: 'warning',
+              title: '請輸入金額',
+            })
+            return
           }
 
-          const json = JSON.stringify(a);
-          this.formData.append("sizeArray", json);
-        });
+          const json = JSON.stringify(a)
+          this.formData.append('sizeArray', json)
+        })
 
-        this.fileArray.forEach(file => {
-          this.formData.append("image", file);
-        });
+        this.fileArray.forEach((file) => {
+          this.formData.append('image', file)
+        })
 
-        this.formData.append("name", this.name);
-        this.formData.append("description", this.description);
-        this.formData.append("status", "on");
-        this.formData.append("mainPicIndex", this.mainPicIndex);
+        this.formData.append('name', this.name)
+        this.formData.append('description', this.description)
+        this.formData.append('status', 'on')
+        this.formData.append('mainPicIndex', this.mainPicIndex)
 
         const { data, statusText } = await ProductAPI.createProduct(
           this.formData
-        );
-
-    
+        )
 
         if (data.status !== 'success' || statusText !== 'OK') {
           throw new Error(statusText)
@@ -368,20 +390,18 @@ export default {
           throw new Error()
         }
 
+        const { name, description, status } = data
 
-        const { name, description, status } = data;
-
-        this.name = name;
-        this.description = description;
-        this.status = status;
+        this.name = name
+        this.description = description
+        this.status = status
 
         for (let i = 0; i < data.Images.length; i++) {
-          this.images.push(data.Images[i].image);
+          this.images.push(data.Images[i].image)
           if (data.Images[i].main) {
-            this.mainPicIndex = i;
+            this.mainPicIndex = i
           }
         }
-
 
         const sizesArray = data.sizes
 
@@ -397,9 +417,7 @@ export default {
           this.selectArray.push({
             selectId: this.sizeInputCount,
             selectSizeId: sizesArray[i].id,
-            price: sizesArray[i].ProductSize.price
-          });
-
+            price: sizesArray[i].ProductSize.price,
           })
 
           this.selectArray.forEach((select) => {
@@ -428,12 +446,12 @@ export default {
             if (Number(select.selectSizeId) !== Number(size.id)) {
               return size
             }
-          });
-        });
+          })
+        })
 
-        this.productId = data.id;
+        this.productId = data.id
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     },
 
@@ -441,89 +459,88 @@ export default {
       try {
         if (this.images.length === 0) {
           Toast.fire({
-            type: "warning",
-            title: "請新增至少一張圖片"
-          });
-          return;
+            type: 'warning',
+            title: '請新增至少一張圖片',
+          })
+          return
         }
         if (!this.name) {
           Toast.fire({
-            type: "warning",
-            title: "請輸入商品名稱"
-          });
-          return;
+            type: 'warning',
+            title: '請輸入商品名稱',
+          })
+          return
         }
         if (this.selectArray.length === 0) {
           Toast.fire({
-            type: "warning",
-            title: "請新增至少一個商品售價"
-          });
-          return;
+            type: 'warning',
+            title: '請新增至少一個商品售價',
+          })
+          return
         }
 
-        this.selectArray.forEach(a => {
+        this.selectArray.forEach((a) => {
           if (a.selectSizeId === 0) {
             Toast.fire({
-              type: "warning",
-              title: "請選擇大小"
-            });
-            return;
+              type: 'warning',
+              title: '請選擇大小',
+            })
+            return
           }
           if (!a.price) {
             Toast.fire({
-              type: "warning",
-              title: "請輸入金額"
-            });
-            return;
+              type: 'warning',
+              title: '請輸入金額',
+            })
+            return
           }
 
-          const json = JSON.stringify(a);
-          this.formData.append("sizeArray", json);
-        });
+          const json = JSON.stringify(a)
+          this.formData.append('sizeArray', json)
+        })
 
         for (let i = 0; i < this.images.length - this.fileArray.length; i++) {
-          this.formData.append("oldImage", this.images[i]);
+          this.formData.append('oldImage', this.images[i])
         }
 
         for (let i = 0; i < this.delete.length; i++) {
-          this.formData.append("deleteImage", this.delete[i]);
+          this.formData.append('deleteImage', this.delete[i])
         }
 
-        this.fileArray.forEach(file => {
-          this.formData.append("image", file);
-        });
+        this.fileArray.forEach((file) => {
+          this.formData.append('image', file)
+        })
 
-        this.formData.append("name", this.name);
-        this.formData.append("description", this.description);
-        this.formData.append("status", "on");
-        this.formData.append("mainPicIndex", this.mainPicIndex);
+        this.formData.append('name', this.name)
+        this.formData.append('description', this.description)
+        this.formData.append('status', 'on')
+        this.formData.append('mainPicIndex', this.mainPicIndex)
 
         const { data, statusText } = await ProductAPI.putProduct({
           productId: this.productId,
-          formData: this.formData
-        });
+          formData: this.formData,
+        })
 
-        if (data.status !== "success" || statusText !== "OK") {
-          throw new Error(statusText);
+        if (data.status !== 'success' || statusText !== 'OK') {
+          throw new Error(statusText)
         }
 
-        this.$router.push({ name: "products" });
+        this.$router.push({ name: 'products' })
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     },
     async statusChange(productId) {
       try {
         const { data, statusText } = await ProductAPI.changeProductStatus({
-          productId
-        });
+          productId,
+        })
 
-        if (data.status !== "success" || statusText !== "OK") {
-          throw new Error(statusText);
+        if (data.status !== 'success' || statusText !== 'OK') {
+          throw new Error(statusText)
         }
 
-        this.$router.push({ name: "products" });
-
+        this.$router.push({ name: 'products' })
       } catch (err) {
         console.log(err)
       }
