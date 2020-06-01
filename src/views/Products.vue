@@ -32,7 +32,22 @@ export default {
         if (statusText !== 'OK') {
           throw new Error(statusText)
         }
-        this.products = data
+
+        this.products = data.map(product => {
+          let mainPic = "";
+
+          for (let i = 0; i < product.Images.length; i++) {
+            if (product.Images[i].main) {
+              mainPic = product.Images[i].image;
+            }
+          }
+
+          return (product = {
+            ...product,
+            mainPic
+          });
+        });
+
       } catch (error) {
         console.log('err', error)
       }

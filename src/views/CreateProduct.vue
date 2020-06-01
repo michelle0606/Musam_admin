@@ -1,121 +1,152 @@
 <template>
   <div class="product-create">
     <TopBar :page-title="title" :button-type="buttonType" />
-    <form @submit.stop.prevent="submit">
-      <div class="product">
-        <div class="product-image">
-          <label for="pic">
-            <div v-if="image" class="image">
-              <img :src="image" width="100%" />
-            </div>
-            <div v-else>
-              <font-awesome-icon :icon="['fa', 'image']" class="icon" />
-              <div>
-                <span>上傳圖片</span>
-              </div>
-            </div>
-            <input
-              type="file"
-              name="image"
-              id="pic"
-              class="file"
-              @change="fileSelected"
-            />
-          </label>
-        </div>
-        <div class="product-name">
-          <input
-            type="text"
-            name="name"
-            v-model="name"
-            placeholder="商品名稱"
-            class="name"
-          />
-        </div>
-        <div class="product-price">
-          <div class="sale-price">
-            <span>商品售價</span>
-          </div>
 
-          <div class="size">
-            <div v-for="(data, index) in sizeInputArray" :key="index">
-              <div class="form-input">
-                <div class="select">
-                  <select
-                    name="select-list"
-                    @change="selectSize($event)"
-                    class="select-list"
-                    :data-index="data.index"
-                    :value="selectArray[index].selectSizeId"
-                  >
-                    <option value="0" disabled selected>選擇大小</option>
-                    <option
-                      v-for="size in data.sizes"
-                      :key="size.id"
-                      :value="size.id"
-                      >{{ size.size }}</option
-                    >
-                  </select>
+    <div class="product">
+      <div class="product-image">
+        <div class="image-square">
+          <label for="pic">
+            <div class="image">
+              <div>
+                <font-awesome-icon :icon="['fa', 'plus-circle']" class="icon" />
+                <div>
+                  <span>新增圖片</span>
                 </div>
-                |
-                <input
-                  type="number"
-                  name="price"
-                  placeholder="請輸入金額"
-                  class="input"
-                  @input="input($event)"
-                  :data-index="data.index"
-                  :value="sizeInputArray[index].price"
-                />
-                <span>元</span>
               </div>
             </div>
             <div>
-              <font-awesome-icon
-                :icon="['fa', 'plus-circle']"
-                class="icon"
-                @click="addSize"
+              <input
+                type="file"
+                name="image"
+                id="pic"
+                class="file"
+                @change="fileSelected"
+                multiple="multiple"
+                accept=".jpeg, .jpg, .png"
               />
+            </div>
+          </label>
+        </div>
+        <div v-for="(image,index) in images" :key="index">
+          <div v-if="index === mainPicIndex" class="image-square select-main-pic">
+            <p
+              :icon="['fa', 'times-circle']"
+              class="x-icon"
+              @click="deleteImage"
+              :data-index="index"
+            >☒</p>
+
+            <div class="image" @click="setMainPic">
+              <img :src="image" width="100%" :data-index="index" />
+            </div>
+          </div>
+          <div v-else class="image-square">
+            <p
+              :icon="['fa', 'times-circle']"
+              class="x-icon"
+              @click="deleteImage"
+              :data-index="index"
+            >☒</p>
+
+            <div class="image" @click="setMainPic">
+              <img :src="image" width="100%" :data-index="index" />
             </div>
           </div>
         </div>
-        <div>
-          <textarea
-            placeholder="請在100字內描述商品特色"
-            name="description"
-            class="product-description"
-            rows="5"
-            v-model="description"
-          />
+      </div>
+      <div class="product-name">
+        <input type="text" name="name" v-model="name" placeholder="商品名稱" class="name" />
+      </div>
+      <div class="product-price">
+        <div class="sale-price">
+          <span>商品售價</span>
         </div>
-        <div class="create-button">
-          <button type="submit">上架商品</button>
+        <div class="size">
+          <div v-for="(data,index) in sizeInputArray" :key="index">
+            <div class="form-input">
+              <div class="select">
+                <select
+                  name="select-list"
+                  @change="selectSize($event)"
+                  class="select-list"
+                  :data-index="data.index"
+                  :value="selectArray[index].selectSizeId"
+                >
+                  <option value="0" disabled selected>選擇大小</option>
+                  <option v-for="size in data.sizes" :key="size.id" :value="size.id">{{size.size}}</option>
+                </select>
+              </div>|
+              <input
+                type="number"
+                name="price"
+                placeholder="請輸入金額"
+                class="input"
+                @input="input($event)"
+                :data-index="data.index"
+                :value="sizeInputArray[index].price"
+              />
+              <span>元</span>
+            </div>
+          </div>
+          <div>
+            <font-awesome-icon :icon="['fa', 'plus-circle']" class="icon" @click="addSize" />
+          </div>
         </div>
       </div>
-    </form>
-    <!-- <BottomBar :page-name="name" /> -->
+      <div>
+        <textarea
+          placeholder="請在100字內描述商品特色"
+          name="description"
+          class="product-description"
+          rows="5"
+          v-model="description"
+        />
+      </div>
+      <div>
+        <div v-if="productId" class="product-bottom-bar">
+          <div class="create-button" @click="edit">確定編輯</div>
+
+          <div
+            v-if="status === 'on'"
+            class="status-change-button"
+            @click="statusChange(productId)"
+          >下架商品</div>
+          <div v-else @click="statusChange(productId)" class="status-change-button">上架商品</div>
+        </div>
+
+        <div v-else @click="submit" class="create-button">上架商品</div>
+      </div>
+      <BottomBar :page-name="PageName" />
+    </div>
   </div>
 </template>
 
 <script>
-import ProductAPI from '../apis/products'
+import ProductAPI from "../apis/products";
+import { Toast } from "./../utils/helpers";
 
 export default {
   data() {
     return {
+      productId: "",
+      PageName: "新增商品",
       sizeRawData: [],
       sizes: [],
       selectArray: [],
       sizeInputCount: 0,
       sizeInputArray: [],
-      key: '請選擇',
-      name: '',
-      title: '新增商品',
-      buttonType: 'add',
-      image: '',
-      description: '',
+      key: "請選擇",
+      name: "",
+      title: "新增商品",
+      buttonType: "back",
+      image: "",
+      description: "",
       formData: new FormData(),
-    }
+      images: [],
+      fileArray: [],
+      mainPicIndex: 0,
+      delete: []
+    };
   },
   created() {
     this.fetchSizes()
@@ -144,19 +175,16 @@ export default {
       }
     },
     fileSelected(event) {
-      console.log(event.target.files[0])
-
-      this.formData.append('file', event.target.files[0])
-
-      console.log(this.formData)
-
       //immediately show image
-      const file = event.target.files.item(0)
-      const reader = new FileReader()
-      reader.addEventListener('load', (e) => {
-        this.image = e.target.result
-      })
-      reader.readAsDataURL(file)
+      for (let i = 0; i < event.target.files.length; i++) {
+        this.fileArray.push(event.target.files[i]);
+        const file = event.target.files.item(i);
+        const reader = new FileReader();
+        reader.addEventListener("load", e => {
+          this.images.push(e.target.result);
+        });
+        reader.readAsDataURL(file);
+      }
     },
     selectSize(event) {
       const selectId = Number(event.currentTarget.dataset.index)
@@ -236,23 +264,81 @@ export default {
       this.selectArray.push({
         selectId: this.sizeInputCount,
         selectSizeId: 0,
-      })
+        price: ""
+      });
     },
     input(event) {
       const selectIndexInArray = event.currentTarget.dataset.index - 1
-
-      this.selectArray[selectIndexInArray].price = event.currentTarget.value
+      this.selectArray[selectIndexInArray].price = event.currentTarget.value;
+      this.sizeInputArray[selectIndexInArray].price = event.currentTarget.value;
+    },
+    deleteImage(e) {
+      const deleteIndex = Number(e.target.dataset.index);
+      this.mainPicIndex = 0;
+      this.delete.push(this.images[deleteIndex]);
+      this.fileArray.splice(deleteIndex, 1);
+      this.images.splice(deleteIndex, 1);
+    },
+    setMainPic(e) {
+      this.mainPicIndex = Number(e.target.dataset.index);
     },
     async submit(e) {
       try {
-        const form = new FormData(e.target)
+        if (this.fileArray.length === 0) {
+          Toast.fire({
+            type: "warning",
+            title: "請新增至少一張圖片"
+          });
+          return;
+        }
+        if (!this.name) {
+          Toast.fire({
+            type: "warning",
+            title: "請輸入商品名稱"
+          });
+          return;
+        }
+        if (this.selectArray.length === 0) {
+          Toast.fire({
+            type: "warning",
+            title: "請新增至少一個商品售價"
+          });
+          return;
+        }
 
-        this.selectArray.forEach((a) => {
-          const json = JSON.stringify(a)
-          form.append('sizeArray', json)
-        })
+        this.selectArray.forEach(a => {
+          if (a.selectSizeId === 0) {
+            Toast.fire({
+              type: "warning",
+              title: "請選擇大小"
+            });
+            return;
+          }
+          if (!a.price) {
+            Toast.fire({
+              type: "warning",
+              title: "請輸入金額"
+            });
+            return;
+          }
 
-        const { data, statusText } = await ProductAPI.createProduct(form)
+          const json = JSON.stringify(a);
+          this.formData.append("sizeArray", json);
+        });
+
+        this.fileArray.forEach(file => {
+          this.formData.append("image", file);
+        });
+
+        this.formData.append("name", this.name);
+        this.formData.append("description", this.description);
+        this.formData.append("status", "on");
+        this.formData.append("mainPicIndex", this.mainPicIndex);
+
+        const { data, statusText } = await ProductAPI.createProduct(
+          this.formData
+        );
+
 
         if (data.status !== 'success' || statusText !== 'OK') {
           throw new Error(statusText)
@@ -271,11 +357,19 @@ export default {
           throw new Error()
         }
 
-        const { name, description, image } = data
+        const { name, description, status, id } = data;
 
-        this.name = name
-        this.description = description
-        this.image = image
+        this.productId = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+
+        for (let i = 0; i < data.Images.length; i++) {
+          this.images.push(data.Images[i].image);
+          if (data.Images[i].main) {
+            this.mainPicIndex = i;
+          }
+        }
 
         const sizesArray = data.sizes
 
@@ -291,7 +385,8 @@ export default {
           this.selectArray.push({
             selectId: this.sizeInputCount,
             selectSizeId: sizesArray[i].id,
-          })
+            price: sizesArray[i].ProductSize.price
+          });
 
           this.selectArray.forEach((select) => {
             this.sizeInputArray = this.sizeInputArray.map((input) => {
@@ -319,8 +414,101 @@ export default {
             if (Number(select.selectSizeId) !== Number(size.id)) {
               return size
             }
-          })
-        })
+          });
+        });
+
+        this.productId = data.id;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    async edit() {
+      try {
+        if (this.images.length === 0) {
+          Toast.fire({
+            type: "warning",
+            title: "請新增至少一張圖片"
+          });
+          return;
+        }
+        if (!this.name) {
+          Toast.fire({
+            type: "warning",
+            title: "請輸入商品名稱"
+          });
+          return;
+        }
+        if (this.selectArray.length === 0) {
+          Toast.fire({
+            type: "warning",
+            title: "請新增至少一個商品售價"
+          });
+          return;
+        }
+
+        this.selectArray.forEach(a => {
+          if (a.selectSizeId === 0) {
+            Toast.fire({
+              type: "warning",
+              title: "請選擇大小"
+            });
+            return;
+          }
+          if (!a.price) {
+            Toast.fire({
+              type: "warning",
+              title: "請輸入金額"
+            });
+            return;
+          }
+
+          const json = JSON.stringify(a);
+          this.formData.append("sizeArray", json);
+        });
+
+        for (let i = 0; i < this.images.length - this.fileArray.length; i++) {
+          this.formData.append("oldImage", this.images[i]);
+        }
+
+        for (let i = 0; i < this.delete.length; i++) {
+          this.formData.append("deleteImage", this.delete[i]);
+        }
+
+        this.fileArray.forEach(file => {
+          this.formData.append("image", file);
+        });
+
+        this.formData.append("name", this.name);
+        this.formData.append("description", this.description);
+        this.formData.append("status", "on");
+        this.formData.append("mainPicIndex", this.mainPicIndex);
+
+        const { data, statusText } = await ProductAPI.putProduct({
+          productId: this.productId,
+          formData: this.formData
+        });
+
+        if (data.status !== "success" || statusText !== "OK") {
+          throw new Error(statusText);
+        }
+
+        this.$router.push({ name: "products" });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async statusChange(productId) {
+      try {
+        const { data, statusText } = await ProductAPI.changeProductStatus({
+          productId
+        });
+
+        if (data.status !== "success" || statusText !== "OK") {
+          throw new Error(statusText);
+        }
+
+        this.$router.push({ name: "products" });
       } catch (err) {
         console.log(err)
       }
@@ -344,25 +532,44 @@ input::-webkit-inner-spin-button {
 }
 
 .product-create {
+  width: 100%;
   height: 100vh;
   text-align: center;
   color: $grey;
 
   .product-image {
+    width: 100%;
+    overflow-x: auto;
+    display: flex;
     padding: 10px;
     margin: 5% auto;
-    background-color: #ffffff;
-    width: 150px;
-    height: 150px;
+    justify-content: space-around;
+
+    .image-square {
+      background-color: #ffffff;
+      width: 150px;
+      height: 150px;
+      padding: 2px;
+    }
 
     .image {
-      height: 100%;
       display: flex;
+      justify-content: space-around;
       align-items: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .x-icon {
+      position: absolute;
+      right: -20px;
+      top: -25px;
+      font-size: 40px;
+      cursor: pointer;
     }
 
     .icon {
-      font-size: 100px;
+      font-size: 75px;
     }
 
     .file {
@@ -441,20 +648,43 @@ input::-webkit-inner-spin-button {
     font-size: 100%;
     width: 100%;
   }
-  .create-button {
-    div {
-      background-color: #5fd399;
-      color: $white;
-      border-radius: 5px;
-      font-size: 16px;
-      width: 100px;
-      height: 40px;
-      margin: 15px auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 10px;
-    }
-  }
+}
+
+.product-bottom-bar {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+.create-button {
+  background-color: #5fd399;
+  color: $white;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 100px;
+  height: 40px;
+  margin: 15px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.status-change-button {
+  background-color: $red;
+  color: $white;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 100px;
+  height: 40px;
+  margin: 15px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.select-main-pic {
+  border-width: 2px;
+  border-color: $blue;
+  border-style: solid;
 }
 </style>

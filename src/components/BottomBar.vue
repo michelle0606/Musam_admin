@@ -34,7 +34,7 @@ export default {
           icon: ["far", "address-book"],
           active: false
         },
-        { id: 4, name: "order", icon: ["fas", "th-list"], active: false }
+        { id: 4, name: "orders", icon: ["fas", "th-list"], active: false }
       ]
     };
   },
