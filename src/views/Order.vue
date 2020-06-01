@@ -1,5 +1,6 @@
 <template>
   <div class="order">
+    <Spinner v-if="isLoading" />
     <div class="top-bar">
       <div>
         <router-link :to="{ name: 'orders' }">
@@ -38,33 +39,31 @@
         >
           訂單已取消
         </div>
-        <div
-          v-if="order_info.order_status === 'unfinish'"
-          class="order_status red"
-          id="order_status"
-          @click.prevent.stop="showWarning"
-        >
-          訂單未完成
+        <div>
+          <div
+            v-if="order_info.order_status === 'unfinish'"
+            class="order_status red"
+            id="order_status"
+            @click.prevent.stop="showWarning"
+          >
+            訂單未完成
+          </div>
+          <div v-else class="order_status green">
+            訂單已完成
+          </div>
         </div>
-        <div
-          v-if="order_info.order_status === 'finish'"
-          class="order_status green"
-        >
-          訂單已完成
-        </div>
-        <div
-          v-if="order_info.payment_status === 'unpaid'"
-          class="payment_status red"
-          id="payment_status"
-          @click.prevent.stop="showWarning"
-        >
-          訂單未付款
-        </div>
-        <div
-          v-if="order_info.payment_status === 'paid'"
-          class="payment_status green"
-        >
-          訂單已付款
+        <div>
+          <div
+            v-if="order_info.payment_status === 'unpaid'"
+            class="payment_status red"
+            id="payment_status"
+            @click.prevent.stop="showWarning"
+          >
+            訂單未付款
+          </div>
+          <div v-else class="payment_status green">
+            訂單已付款
+          </div>
         </div>
       </div>
     </div>
@@ -73,7 +72,7 @@
         <tbody>
           <tr v-for="item in order_info.items" :key="item.OrderItem.id">
             <td>{{ item.OrderItem.quantity }} x</td>
-            <td>{{ item.SizeId }} {{ item.Product.name }}</td>
+            <td>{{ item.Size.size }} {{ item.Product.name }}</td>
           </tr>
         </tbody>
       </table>
@@ -139,13 +138,11 @@
   </div>
 </template>
 <script>
-import TopBar from './../components/TopBar'
-import BottomBar from './../components/BottomBar'
 import orderAPI from '../apis/orders'
+import { Toast } from './../utils/helpers'
 
 export default {
   name: 'order',
-  components: { TopBar, BottomBar },
   data() {
     return {
       orderId: -1,
@@ -155,7 +152,8 @@ export default {
       warning: false,
       type: '',
       reason: '',
-      active: false
+      active: false,
+      isLoading: true,
     }
   },
   created() {
@@ -165,13 +163,19 @@ export default {
   methods: {
     async fetchOrder() {
       try {
+        this.isLoading = true
         const id = this.orderId
         const response = await orderAPI.getOrder(id)
         const { data, statusText } = response
         if (statusText !== 'OK') throw new Error(statusText)
         this.order_info = data.order
+        this.isLoading = false
       } catch (error) {
-        console.log('fetchOrder error', error)
+        this.isLoading = false
+        Toast.fire({
+          type: 'error',
+          title: '無法取得訂單資訊，請稍後再試',
+        })
       }
     },
     formatDate(date) {
@@ -191,7 +195,10 @@ export default {
       switch (event.target.id) {
         case 'order_status':
           if (this.order_info.payment_status !== 'paid') {
-            window.alert('此訂單尚未付款！')
+            Toast.fire({
+              icon: 'error',
+              title: '未付款的訂單無法進行此動作！',
+            })
           } else {
             this.warning = !this.warning
             this.type = 'one'
@@ -208,7 +215,7 @@ export default {
       try {
         const formData = {
           id: id,
-          order_status: 'finish'
+          order_status: 'finish',
         }
         const response = await orderAPI.updateOrder({ formData })
         const { data, statusText } = response
@@ -224,7 +231,7 @@ export default {
       try {
         const formData = {
           id: id,
-          payment_status: 'paid'
+          payment_status: 'paid',
         }
         const response = await orderAPI.updateOrder({ formData })
         const { data, statusText } = response
@@ -242,7 +249,7 @@ export default {
         const formData = {
           id: id,
           note: this.reason,
-          order_status: 'cancelled'
+          order_status: 'cancelled',
         }
         const response = await orderAPI.updateOrder({ id, formData })
         const { data, statusText } = response
@@ -254,8 +261,8 @@ export default {
     },
     changeColor() {
       this.active = this.reason === '' ? false : true
-    }
-  }
+    },
+  },
 }
 </script>
 <style lang="scss" scoped>

@@ -129,8 +129,6 @@ import ProductAPI from "../apis/products";
 import { Toast } from "./../utils/helpers";
 
 export default {
-  components: { BottomBar, TopBar },
-
   data() {
     return {
       productId: "",
@@ -269,6 +267,7 @@ export default {
       this.selectArray.push({
         selectId: this.sizeInputCount,
         selectSizeId: 0,
+
         price: ""
       });
     },
@@ -392,27 +391,27 @@ export default {
             selectSizeId: sizesArray[i].id,
             price: sizesArray[i].ProductSize.price
           });
-
-          this.selectArray.forEach(select => {
-            this.sizeInputArray = this.sizeInputArray.map(input => {
-              if (Number(input.index) !== Number(select.selectId)) {
-                const filter = input.sizes.filter(a => {
-                  if (Number(a.id) !== Number(select.selectSizeId)) {
-                    return a;
-                  }
-                });
-                return (input = {
-                  ...input,
-                  sizes: filter
-                });
-              } else {
-                return (input = {
-                  ...input
-                });
-              }
-            });
-          });
         }
+
+        this.selectArray.forEach(select => {
+          this.sizeInputArray = this.sizeInputArray.map(input => {
+            if (Number(input.index) !== Number(select.selectId)) {
+              const filter = input.sizes.filter(a => {
+                if (Number(a.id) !== Number(select.selectSizeId)) {
+                  return a;
+                }
+              });
+              return (input = {
+                ...input,
+                sizes: filter
+              });
+            } else {
+              return (input = {
+                ...input
+              });
+            }
+          });
+        });
 
         this.selectArray.forEach(select => {
           this.sizes = this.sizes.filter(size => {
@@ -421,8 +420,6 @@ export default {
             }
           });
         });
-
-        this.productId = data.id;
       } catch (err) {
         console.log(err);
       }
@@ -521,7 +518,6 @@ export default {
   }
 };
 </script>
-
 
 <style lang="scss" scoped>
 $green: #34a94e;
