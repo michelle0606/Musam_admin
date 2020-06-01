@@ -7,6 +7,7 @@ const baseURL = process.env.VUE_APP_BACKENDURL || 'http://localhost:3000'
 
 const axiosInstance = axios.create({
   baseURL,
+  withCredentials: true
 })
 
 axiosInstance.interceptors.request.use(

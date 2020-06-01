@@ -22,6 +22,7 @@
                 class="file"
                 @change="fileSelected"
                 multiple="multiple"
+                accept=".jpeg, .jpg, .png"
               />
             </div>
           </label>
@@ -129,10 +130,10 @@ import TopBar from "./../components/TopBar";
 import ProductAPI from "../apis/products";
 import { Toast } from "./../utils/helpers";
 
-
 export default {
   data() {
     return {
+      productId: "",
       PageName: "新增商品",
       sizeRawData: [],
       sizes: [],
@@ -369,8 +370,10 @@ export default {
         }
 
 
-        const { name, description, status } = data;
+        const { name, description, status, id } = data;
 
+
+        this.productId = id;
         this.name = name;
         this.description = description;
         this.status = status;
@@ -399,29 +402,27 @@ export default {
             selectSizeId: sizesArray[i].id,
             price: sizesArray[i].ProductSize.price
           });
-
-          })
-
-          this.selectArray.forEach((select) => {
-            this.sizeInputArray = this.sizeInputArray.map((input) => {
-              if (Number(input.index) !== Number(select.selectId)) {
-                const filter = input.sizes.filter((a) => {
-                  if (Number(a.id) !== Number(select.selectSizeId)) {
-                    return a
-                  }
-                })
-                return (input = {
-                  ...input,
-                  sizes: filter,
-                })
-              } else {
-                return (input = {
-                  ...input,
-                })
-              }
-            })
-          })
         }
+        this.selectArray.forEach(select => {
+          this.sizeInputArray = this.sizeInputArray.map(input => {
+            if (Number(input.index) !== Number(select.selectId)) {
+              const filter = input.sizes.filter(a => {
+                if (Number(a.id) !== Number(select.selectSizeId)) {
+                  return a;
+                }
+              });
+              return (input = {
+                ...input,
+                sizes: filter
+              });
+            } else {
+              return (input = {
+                ...input
+              });
+            }
+          });
+        });
+
 
         this.selectArray.forEach((select) => {
           this.sizes = this.sizes.filter((size) => {
@@ -430,8 +431,6 @@ export default {
             }
           });
         });
-
-        this.productId = data.id;
       } catch (err) {
         console.log(err);
       }
