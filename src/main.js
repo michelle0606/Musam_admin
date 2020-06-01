@@ -14,6 +14,9 @@ import {
   faClock,
   faImage,
   faPlusCircle,
+
+  faTimesCircle
+
 } from '@fortawesome/free-solid-svg-icons'
 import { faAddressBook, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -28,7 +31,8 @@ library.add(
   faTrashAlt,
   faClock,
   faImage,
-  faPlusCircle
+  faPlusCircle,
+  faTimesCircle
 )
 
 import BottomBar from './components/BottomBar'
