@@ -1,16 +1,14 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
 
-
-
-const baseURL = process.env.VUE_APP_BACKENDURL || 'http://localhost:3000'
+const baseURL = process.env.VUE_APP_BACKENDURL
 
 const axiosInstance = axios.create({
   baseURL,
 })
 
 axiosInstance.interceptors.request.use(
-  config => {
+  (config) => {
     // 從 localStorage 將 token 取出
     const token = localStorage.getItem('token')
 
@@ -20,7 +18,7 @@ axiosInstance.interceptors.request.use(
     }
     return config
   },
-  err => Promise.reject(err)
+  (err) => Promise.reject(err)
 )
 
 export const apiHelper = axiosInstance
