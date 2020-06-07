@@ -23,22 +23,12 @@
     </form>
     <Spinner v-if="isLoading" />
     <div class="orderOrCount" v-else>
-      <div v-if="state === 'order'" @click.stop.prevent="state = 'count'">
-        產品數量統計
-      </div>
-      <div v-if="state === 'count'" @click.stop.prevent="state = 'order'">
-        瀏覽未完成訂單
-      </div>
+      <div v-if="state === 'order'" @click.stop.prevent="state = 'count'">產品數量統計</div>
+      <div v-if="state === 'count'" @click.stop.prevent="state = 'order'">瀏覽未完成訂單</div>
     </div>
     <div class="orders_box" v-if="state === 'order'">
-      <OrderCard
-        v-for="order in orders"
-        :key="order.id"
-        :initial-order="order"
-      />
-      <div class="feedback" v-if="orders.length < 1">
-        此區間目前無任何未完成訂單。
-      </div>
+      <OrderCard v-for="order in orders" :key="order.id" :initial-order="order" />
+      <div class="feedback" v-if="orders.length < 1">此區間目前無任何未完成訂單。</div>
     </div>
     <div class="total-products" v-if="state === 'count'">
       <div class="order-items">
@@ -57,114 +47,114 @@
 </template>
 
 <script>
-import OrderCard from './../components/OrderCard'
-import orderAPI from '../apis/orders'
-import { Toast } from './../utils/helpers'
+import OrderCard from "./../components/OrderCard";
+import orderAPI from "../apis/orders";
+import { Toast } from "./../utils/helpers";
 
 //////// date setting ////////
-const today = new Date()
-const year = today.getFullYear()
+const today = new Date();
+const year = today.getFullYear();
 const month =
-  today.getMonth() + 1 < 10 ? `0${today.getMonth() + 1}` : today.getMonth() + 1
-const startDay = today.getDate() < 10 ? `0${today.getDate()}` : today.getDate()
+  today.getMonth() + 1 < 10 ? `0${today.getMonth() + 1}` : today.getMonth() + 1;
+const startDay = today.getDate() < 10 ? `0${today.getDate()}` : today.getDate();
 const endDay =
-  today.getDate() + 2 < 10 ? `0${today.getDate() + 2}` : today.getDate() + 2
+  today.getDate() + 2 < 10 ? `0${today.getDate() + 2}` : today.getDate() + 2;
 
-const formatStartDate = `${year}-${month}-${startDay}`
-const formatEndDate = `${year}-${month}-${endDay}`
+const formatStartDate = `${year}-${month}-${startDay}`;
+const formatEndDate = `${year}-${month}-${endDay}`;
 //////////////////////////////
 
 export default {
-  name: 'orders',
+  name: "orders",
   components: { OrderCard },
   data() {
     return {
       name: this.$options.name,
-      title: '未完成訂單',
-      buttonType: 'add',
-      start: '2020-05-29',
-      end: '2020-05-31',
-      state: 'order',
+      title: "未完成訂單",
+      buttonType: "add",
+      start: formatStartDate,
+      end: formatEndDate,
+      state: "order",
       orders: [],
       isLoading: true,
-      result: [],
-    }
+      result: []
+    };
   },
   created() {
-    this.handleDateChange()
+    this.handleDateChange();
   },
   methods: {
     async handleDateChange(e) {
       try {
         if (e) {
-          this.isLoading = true
-          const targetName = e.target.name
-          const targetValue = e.target.value
+          this.isLoading = true;
+          const targetName = e.target.name;
+          const targetValue = e.target.value;
           switch (targetName) {
-            case 'startDate':
-              this.start = targetValue
-              break
-            case 'endDate':
-              this.end = targetValue
-              break
+            case "startDate":
+              this.start = targetValue;
+              break;
+            case "endDate":
+              this.end = targetValue;
+              break;
           }
         }
 
         const ordersDate = {
           startDate: this.start,
-          endDate: this.end,
-        }
-        const response = await orderAPI.getOrders({ ordersDate })
-        const { data, statusText } = response
-        if (statusText !== 'OK') throw new Error(statusText)
-        this.orders = data
-        this.isLoading = false
-        this.calculator()
+          endDate: this.end
+        };
+        const response = await orderAPI.getOrders({ ordersDate });
+        const { data, statusText } = response;
+        if (statusText !== "OK") throw new Error(statusText);
+        this.orders = data;
+        this.isLoading = false;
+        this.calculator();
       } catch (error) {
-        this.isLoading = false
+        this.isLoading = false;
         Toast.fire({
-          type: 'error',
-          title: '無法取得訂單資訊，請稍後再試',
-        })
+          type: "error",
+          title: "無法取得訂單資訊，請稍後再試"
+        });
       }
     },
     calculator() {
-      const newArr = []
+      const newArr = [];
 
-      const targetData = this.orders.forEach((order) => {
-        newArr.push(order.items)
-      })
+      const targetData = this.orders.forEach(order => {
+        newArr.push(order.items);
+      });
       const concatArr = newArr.reduce(function(a, b) {
-        return a.concat(b)
-      }, [])
+        return a.concat(b);
+      }, []);
 
-      const mapArr = concatArr.map((item) => {
+      const mapArr = concatArr.map(item => {
         return {
           ProductSizeId: item.OrderItem.ProductSizeId,
           name: item.Product.name,
           size: item.Size.size,
-          quantity: item.OrderItem.quantity,
-        }
-      })
+          quantity: item.OrderItem.quantity
+        };
+      });
 
-      const hash = {}
-      const result = []
+      const hash = {};
+      const result = [];
       mapArr.forEach(function(item) {
-        var id = item['ProductSizeId']
+        var id = item["ProductSizeId"];
         if (hash[id]) {
-          hash[id].quantity = hash[id].quantity + item.quantity
+          hash[id].quantity = hash[id].quantity + item.quantity;
         } else {
           result.push(
             (hash[id] = {
-              ...item,
+              ...item
             })
-          )
+          );
         }
-      })
-      this.result = result
-    },
-  },
-}
+      });
+      this.result = result;
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
