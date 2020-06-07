@@ -151,15 +151,16 @@ export default {
       delete: []
     };
   },
-  created() {
-    this.fetchSizes();
+  async created() {
+    await this.fetchSizes();
     if (Number(this.$route.params.id) > 0) {
       const { id: productId } = this.$route.params;
       this.fetchProduct(productId);
     }
   },
-  beforeRouteUpdate(to, from, next) {
+  async beforeRouteUpdate(to, from, next) {
     const { id: productId } = to.params;
+    await this.fetchSizes();
     this.fetchProduct(productId);
     next();
   },
@@ -171,6 +172,9 @@ export default {
         if (statusText !== "OK") {
           throw new Error(statusText);
         }
+
+        console.log("fetchSize", data);
+
         this.sizes = data;
         this.sizeRawData = data;
       } catch (error) {
@@ -390,26 +394,28 @@ export default {
             selectSizeId: sizesArray[i].id,
             price: sizesArray[i].ProductSize.price
           });
-        }
-        this.selectArray.forEach(select => {
-          this.sizeInputArray = this.sizeInputArray.map(input => {
-            if (Number(input.index) !== Number(select.selectId)) {
-              const filter = input.sizes.filter(a => {
-                if (Number(a.id) !== Number(select.selectSizeId)) {
-                  return a;
-                }
-              });
-              return (input = {
-                ...input,
-                sizes: filter
-              });
-            } else {
-              return (input = {
-                ...input
-              });
-            }
+
+          this.selectArray.forEach(select => {
+            this.sizeInputArray = this.sizeInputArray.map(input => {
+              if (Number(input.index) !== Number(select.selectId)) {
+                const filter = input.sizes.filter(a => {
+                  if (Number(a.id) !== Number(select.selectSizeId)) {
+                    return a;
+                  }
+                });
+
+                return (input = {
+                  ...input,
+                  sizes: filter
+                });
+              } else {
+                return (input = {
+                  ...input
+                });
+              }
+            });
           });
-        });
+        }
 
         this.selectArray.forEach(select => {
           this.sizes = this.sizes.filter(size => {

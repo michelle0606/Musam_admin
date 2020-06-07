@@ -19,7 +19,9 @@
     </div>
     <div class="container">
       <div class="base-info">
-        <div v-if="order_info.product_delivery === 'self'" class="delivery red">自取</div>
+        <div v-if="order_info.product_delivery === 'self'" class="delivery red">
+          自取
+        </div>
         <div v-else class="delivery green">宅配</div>
         <div class="pickup_date">
           {{ formatDate(order_info.pickup_date) }}
@@ -27,16 +29,25 @@
         </div>
         <div class="phone">{{ order_info.recipient_phone }}</div>
       </div>
-      <div v-if="order_info.product_delivery === 'home'" class="address">{{ order_info.address }}</div>
+      <div v-if="order_info.product_delivery === 'home'" class="address">
+        {{ order_info.address }}
+      </div>
       <div class="order-status">
-        <div v-if="order_info.order_status === 'cancelled'" class="order_status">訂單已取消</div>
+        <div
+          v-if="order_info.order_status === 'cancelled'"
+          class="order_status"
+        >
+          訂單已取消
+        </div>
         <div>
           <div
             v-if="order_info.order_status === 'unfinish'"
             class="order_status red"
             id="order_status"
             @click.prevent.stop="showWarning"
-          >訂單未完成</div>
+          >
+            訂單未完成
+          </div>
           <div v-else class="order_status green">訂單已完成</div>
         </div>
         <div>
@@ -45,7 +56,9 @@
             class="payment_status red"
             id="payment_status"
             @click.prevent.stop="showWarning"
-          >訂單未付款</div>
+          >
+            訂單未付款
+          </div>
           <div v-else class="payment_status green">訂單已付款</div>
         </div>
       </div>
@@ -74,10 +87,23 @@
       <div class="cancel-order">
         <div>
           <label for="cancel">取消訂單</label>
-          <input v-model="reason" type="text" id="cancel" placeholder="請輸入原因" @input="changeColor" />
+          <input
+            v-model="reason"
+            type="text"
+            id="cancel"
+            placeholder="請輸入原因"
+            @input="changeColor"
+          />
         </div>
-        <div class="trash" disabled="disabled" @click.prevent.stop="cancelOrder(orderId)">
-          <font-awesome-icon :class="{ red: active === true }" :icon="['far', 'trash-alt']" />
+        <div
+          class="trash"
+          disabled="disabled"
+          @click.prevent.stop="cancelOrder(orderId)"
+        >
+          <font-awesome-icon
+            :class="{ red: active === true }"
+            :icon="['far', 'trash-alt']"
+          />
         </div>
       </div>
     </div>
@@ -85,28 +111,34 @@
     <BottomBar :page-name="name" />
     <div class="warning" v-if="warning === true">
       <div class="type-one" v-if="type === 'one'">
-        <div>請確定這筆訂單的所有品項皆已完成，並且寄出/交貨了，再按下確認鍵，確認後將無法修改。</div>
         <div>
-          <button @click.prevent.stop="showWarning">返回</button>
+          請確定這筆訂單的所有品項皆已完成，並且寄出/交貨了，再按下確認鍵，確認後將無法修改。
+        </div>
+        <div>
+          <button @click.prevent.stop="warning === false">返回</button>
           <button @click.prevent.stop="updateOrderStatus(orderId)">確認</button>
         </div>
       </div>
       <div class="type-two" v-if="type === 'two'">
-        <div>請確定已經收到這筆訂單的款項後，再按下確認鍵，確認後將無法修改。</div>
         <div>
-          <button @click.prevent.stop="showWarning">返回</button>
-          <button @click.prevent.stop="updatePaymentStatus(orderId)">確認</button>
+          請確定已經收到這筆訂單的款項後，再按下確認鍵，確認後將無法修改。
+        </div>
+        <div>
+          <button @click.prevent.stop="warning === false">返回</button>
+          <button @click.prevent.stop="updatePaymentStatus(orderId)">
+            確認
+          </button>
         </div>
       </div>
     </div>
   </div>
 </template>
 <script>
-import orderAPI from "../apis/orders";
-import { Toast } from "./../utils/helpers";
+import orderAPI from '../apis/orders'
+import { Toast } from './../utils/helpers'
 
 export default {
-  name: "order",
+  name: 'order',
   data() {
     return {
       orderId: -1,
@@ -114,120 +146,120 @@ export default {
       order_info: [],
       showBooking: false,
       warning: false,
-      type: "",
-      reason: "",
+      type: '',
+      reason: '',
       active: false,
-      isLoading: true
-    };
+      isLoading: true,
+    }
   },
   created() {
-    this.orderId = this.$route.params.id;
-    this.fetchOrder();
+    this.orderId = this.$route.params.id
+    this.fetchOrder()
   },
   methods: {
     async fetchOrder() {
       try {
-        this.isLoading = true;
-        const id = this.orderId;
-        const response = await orderAPI.getOrder(id);
-        const { data, statusText } = response;
-        if (statusText !== "OK") throw new Error(statusText);
-        this.order_info = data.order;
-        this.isLoading = false;
+        this.isLoading = true
+        const id = this.orderId
+        const response = await orderAPI.getOrder(id)
+        const { data, statusText } = response
+        if (statusText !== 'OK') throw new Error(statusText)
+        this.order_info = data.order
+        this.isLoading = false
       } catch (error) {
-        this.isLoading = false;
+        this.isLoading = false
         Toast.fire({
-          type: "error",
-          title: "無法取得訂單資訊，請稍後再試"
-        });
+          type: 'error',
+          title: '無法取得訂單資訊，請稍後再試',
+        })
       }
     },
     formatDate(date) {
-      const day = new Date(date);
+      const day = new Date(date)
       const formatMonth =
-        day.getMonth() > 10 ? day.getMonth() : day.getMonth() + 1;
-      const formatDate = day.getDate() > 10 ? day.getDate() : day.getDate() + 1;
-      return `${formatMonth}/${formatDate}`;
+        day.getMonth() > 10 ? day.getMonth() : day.getMonth() + 1
+      const formatDate = day.getDate() > 10 ? day.getDate() : day.getDate() + 1
+      return `${formatMonth}/${formatDate}`
     },
     formatTime(time) {
-      if (time) return time.slice(0, 5);
+      if (time) return time.slice(0, 5)
     },
     toggle() {
-      this.showBooking = !this.showBooking;
+      this.showBooking = !this.showBooking
     },
     showWarning() {
       switch (event.target.id) {
-        case "order_status":
-          if (this.order_info.payment_status !== "paid") {
+        case 'order_status':
+          if (this.order_info.payment_status !== 'paid') {
             Toast.fire({
-              icon: "error",
-              title: "未付款的訂單無法進行此動作！"
-            });
+              icon: 'error',
+              title: '未付款的訂單無法進行此動作！',
+            })
           } else {
-            this.warning = !this.warning;
-            this.type = "one";
+            this.warning = !this.warning
+            this.type = 'one'
           }
 
-          break;
-        case "payment_status":
-          this.warning = !this.warning;
-          this.type = "two";
-          break;
+          break
+        case 'payment_status':
+          this.warning = !this.warning
+          this.type = 'two'
+          break
       }
     },
     async updateOrderStatus(id) {
       try {
         const formData = {
           id: id,
-          order_status: "finish"
-        };
-        const response = await orderAPI.updateOrder({ formData });
-        const { data, statusText } = response;
-        if (statusText !== "OK" || data.status !== "success")
-          throw new Error(statusText);
-        this.order_info.order_status = "finish";
-        this.warning = !this.warning;
+          order_status: 'finish',
+        }
+        const response = await orderAPI.updateOrder({ formData })
+        const { data, statusText } = response
+        if (statusText !== 'OK' || data.status !== 'success')
+          throw new Error(statusText)
+        this.order_info.order_status = 'finish'
+        this.warning = !this.warning
       } catch (error) {
-        console.log("updateOrderStatus error", error);
+        console.log('updateOrderStatus error', error)
       }
     },
     async updatePaymentStatus(id) {
       try {
         const formData = {
           id: id,
-          payment_status: "paid"
-        };
-        const response = await orderAPI.updateOrder({ formData });
-        const { data, statusText } = response;
-        if (statusText !== "OK" || data.status !== "success")
-          throw new Error(statusText);
-        this.order_info.order_status = "paid";
-        this.warning = !this.warning;
+          payment_status: 'paid',
+        }
+        const response = await orderAPI.updateOrder({ formData })
+        const { data, statusText } = response
+        if (statusText !== 'OK' || data.status !== 'success')
+          throw new Error(statusText)
+        this.order_info.payment_status = 'paid'
+        this.warning = !this.warning
       } catch (error) {
-        console.log("updatePaymentStatus error", error);
+        console.log('updatePaymentStatus error', error)
       }
     },
     async cancelOrder(id) {
       try {
-        if (this.reason === "") return;
+        if (this.reason === '') return
         const formData = {
           id: id,
           note: this.reason,
-          order_status: "cancelled"
-        };
-        const response = await orderAPI.updateOrder({ id, formData });
-        const { data, statusText } = response;
-        if (statusText !== "OK" || data.status !== "success")
-          throw new Error(statusText);
+          order_status: 'cancelled',
+        }
+        const response = await orderAPI.updateOrder({ id, formData })
+        const { data, statusText } = response
+        if (statusText !== 'OK' || data.status !== 'success')
+          throw new Error(statusText)
       } catch (error) {
-        console.log("cancelOrder error", error);
+        console.log('cancelOrder error', error)
       }
     },
     changeColor() {
-      this.active = this.reason === "" ? false : true;
-    }
-  }
-};
+      this.active = this.reason === '' ? false : true
+    },
+  },
+}
 </script>
 <style lang="scss" scoped>
 $green: #34a94e;
@@ -288,7 +320,7 @@ $white: #e5e5e5;
       grid-template-columns: 65px 100px 1fr;
       grid-template-rows: 40px;
       grid-gap: 8px;
-      grid-template-areas: "delivery pickup_date phone";
+      grid-template-areas: 'delivery pickup_date phone';
       align-items: center;
       .pickup_date {
         color: $grey;

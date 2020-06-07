@@ -1,7 +1,8 @@
 import axios from 'axios'
 import Swal from 'sweetalert2'
+require('dotenv').config()
 
-const baseURL = process.env.VUE_APP_BACKENDURL
+const baseURL = process.env.VUE_APP_BACKENDURL || 'http://localhost:3000'
 
 const axiosInstance = axios.create({
   baseURL,
