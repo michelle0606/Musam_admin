@@ -27,7 +27,7 @@
             </div>
           </label>
         </div>
-        <div v-for="(image,index) in images" :key="index">
+        <div v-for="(image, index) in images" :key="index">
           <div v-if="index === mainPicIndex" class="image-square select-main-pic">
             <p
               :icon="['fa', 'times-circle']"
@@ -63,7 +63,7 @@
         </div>
 
         <div class="size">
-          <div v-for="(data,index) in sizeInputArray" :key="index">
+          <div v-for="(data, index) in sizeInputArray" :key="index">
             <div class="form-input">
               <div class="select">
                 <select
@@ -74,7 +74,7 @@
                   :value="selectArray[index].selectSizeId"
                 >
                   <option value="0" disabled selected>選擇大小</option>
-                  <option v-for="size in data.sizes" :key="size.id" :value="size.id">{{size.size}}</option>
+                  <option v-for="size in data.sizes" :key="size.id" :value="size.id">{{ size.size }}</option>
                 </select>
               </div>|
               <input
@@ -271,7 +271,6 @@ export default {
       this.selectArray.push({
         selectId: this.sizeInputCount,
         selectSizeId: 0,
-
         price: ""
       });
     },

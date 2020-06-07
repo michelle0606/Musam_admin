@@ -9,7 +9,7 @@ const axiosInstance = axios.create({
 })
 
 axiosInstance.interceptors.request.use(
-  config => {
+  (config) => {
     // 從 localStorage 將 token 取出
     const token = localStorage.getItem('token')
 
@@ -19,7 +19,7 @@ axiosInstance.interceptors.request.use(
     }
     return config
   },
-  err => Promise.reject(err)
+  (err) => Promise.reject(err)
 )
 
 export const apiHelper = axiosInstance
