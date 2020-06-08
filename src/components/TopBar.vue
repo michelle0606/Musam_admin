@@ -82,6 +82,9 @@ $white: #e5e5e5;
   padding: 0px 20px;
   color: $white;
   display: grid;
+  position: fixed;
+  width: 100%;
+  z-index: 10;
   .type-one > div {
     display: flex;
     align-items: center;

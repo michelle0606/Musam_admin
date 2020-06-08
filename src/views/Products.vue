@@ -1,36 +1,38 @@
 <template>
   <div class="product-page">
     <TopBar :page-title="title" :button-type="buttonType" />
+    <Spinner v-if="isLoading" />
     <ProductCard :products="products" />
     <BottomBar :page-name="name" />
   </div>
 </template>
 
 <script>
-import ProductAPI from '../apis/products'
-import ProductCard from '../components/ProductCard'
+import ProductAPI from "../apis/products";
+import ProductCard from "../components/ProductCard";
 
 export default {
   components: { ProductCard },
 
   data() {
     return {
-      name: 'products',
-      title: '商品管理',
+      name: "products",
+      title: "商品管理",
       products: [],
-      buttonType: 'add',
-    }
+      buttonType: "add",
+      isLoading: true
+    };
   },
   created() {
-    this.fetchProducts()
+    this.fetchProducts();
   },
   methods: {
     async fetchProducts(req, res) {
       try {
-        const { data, statusText } = await ProductAPI.getProducts()
+        const { data, statusText } = await ProductAPI.getProducts();
 
-        if (statusText !== 'OK') {
-          throw new Error(statusText)
+        if (statusText !== "OK") {
+          throw new Error(statusText);
         }
 
         this.products = data.map(product => {
@@ -47,13 +49,14 @@ export default {
             mainPic
           });
         });
-
+        this.isLoading = false;
       } catch (error) {
-        console.log('err', error)
+        this.isLoading = false;
+        console.log("err", error);
       }
-    },
-  },
-}
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>

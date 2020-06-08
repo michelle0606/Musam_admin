@@ -28,10 +28,10 @@ export default {
   props: {
     products: {
       type: Array,
-      required: true,
-    },
-  },
-}
+      required: true
+    }
+  }
+};
 </script>
 
 <style lang="scss" scoped>
@@ -48,9 +48,9 @@ $white: #e5e5e5;
   grid-template-columns: 140px 140px;
   grid-template-rows: 140px;
   grid-gap: 20px;
-  height: 450px;
+  height: 475px;
   margin: 0 auto;
-  margin-top: 23px;
+  padding-top: 80px;
   justify-content: center;
 
   .product {

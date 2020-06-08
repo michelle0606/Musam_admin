@@ -57,7 +57,7 @@ $grey: #919191;
 $white: #e5e5e5;
 
 .bottom-bar {
-  position: absolute;
+  position: fixed;
   width: 100%;
   bottom: 0px;
   background-color: #ffffff;

@@ -1,31 +1,37 @@
 <template>
-  <div class="customer-orders">
+  <div>
     <TopBar :page-title="title" :button-type="buttonType" />
-    <div class="customer-info">
-      <div>電話號碼</div>
-      <div>{{customer.phone}}</div>
-    </div>
-    <div>未完成訂單</div>
-    <div v-for="order in unfinishOrders" :key="order.id" class="unfinish-order">
-      <div class="payment-method">{{order.payment_method}}</div>
-      <div>
-        <div class="order-time">
-          {{ formatDate(order.pickup_date) }}
-          {{ formatTime(order.pickup_time) }}
-        </div>
-        <div class="order-address">{{ order.address}}</div>
+    <div class="customer-orders">
+      <div class="customer-info">
+        <div class="ptitle">電話號碼</div>
+        <div>{{customer.phone}}</div>
       </div>
-    </div>
-    <div>已完成訂單</div>
-    <div class="finish-order">
-      <div>訂單編號</div>
-      <div>訂單日期</div>
-      <div>訂單金額</div>
-    </div>
-    <div v-for="order in finishOrders" :key="order.id" class="finish-order">
-      <div>{{order.id}}</div>
-      <div class="order-date">{{ formatDate(order.pickup_date) }}</div>
-      <div class="order-address">$ {{ order.amount+order.shipping_fee}}</div>
+      <div class="subtitle">未完成訂單</div>
+      <Spinner v-if="isLoading" />
+      <div v-for="order in unfinishOrders" :key="order.id" class="unfinish-order">
+        <div class="payment-method">
+          <div v-if="order.product_delivery ==='home'">宅配</div>
+          <div v-if="order.product_delivery ==='self'">自取</div>
+        </div>
+        <div>
+          <div class="order-time">
+            {{ formatDate(order.pickup_date) }}
+            {{ formatTime(order.pickup_time) }}
+          </div>
+          <div class="order-address">{{ order.address}}</div>
+        </div>
+      </div>
+      <div class="subtitle">已完成訂單</div>
+      <div class="finish-order table-title">
+        <div>訂單編號</div>
+        <div>訂單日期</div>
+        <div>訂單金額</div>
+      </div>
+      <div v-for="order in finishOrders" :key="order.id" class="finish-order">
+        <div>{{order.sn.slice(6, 14)}}</div>
+        <div class="order-date">{{ formatDate(order.pickup_date) }}</div>
+        <div class="order-address">$ {{ order.amount+order.shipping_fee}}</div>
+      </div>
     </div>
     <BottomBar :page-name="name" />
   </div>
@@ -49,7 +55,8 @@ export default {
       customer: "",
       unfinishOrders: [],
       finishOrders: [],
-      cancelOrders: []
+      cancelOrders: [],
+      isLoading: true
     };
   },
   created() {
@@ -82,9 +89,9 @@ export default {
             this.finishOrders.push(order);
           }
         });
-        // console.log(this.finishOrders);
-        // console.log(this.customer);
+        this.isLoading = false;
       } catch (err) {
+        this.isLoading = false;
         console.log(err);
       }
     },
@@ -112,15 +119,20 @@ $grey: #919191;
 $white: #e5e5e5;
 
 .customer-orders {
-  height: 100vh;
+  padding: 80px 0px;
 }
 
 .customer-info {
   background-color: #ffffff;
-  margin: 5%;
-  padding: 10px;
-  display: grid;
-  grid-template-columns: 40% 60%;
+  padding: 7px 10px;
+  width: 90%;
+  margin: auto;
+  border-radius: 5px;
+  display: flex;
+  .ptitle {
+    color: rgba(0, 0, 0, 0.6);
+    margin-right: 10px;
+  }
 }
 
 .payment-method {
@@ -132,6 +144,20 @@ $white: #e5e5e5;
 
 .order-time {
   color: rgba(0, 0, 0, 0.6);
+  text-align: left;
+  padding-left: 10px;
+}
+
+.order-address {
+  text-align: left;
+  padding-left: 10px;
+}
+
+.subtitle {
+  color: rgba(0, 0, 0, 0.6);
+  text-align: left;
+  padding-left: 15px;
+  margin-top: 20px;
 }
 .customer-orders {
   text-align: center;
@@ -146,10 +172,15 @@ $white: #e5e5e5;
 }
 
 .finish-order {
-  padding: 25px;
+  height: 50px;
+  align-items: center;
   margin-top: 2%;
   background-color: #ffffff;
   display: grid;
   grid-template-columns: 33% 33% 33%;
+}
+
+.table-title {
+  color: rgba(0, 0, 0, 0.6);
 }
 </style>

@@ -27,26 +27,20 @@
             </div>
           </label>
         </div>
-        <div v-for="(image, index) in images" :key="index">
+        <div v-for="(image, index) in images" :key="index" class="image-wrapper">
           <div v-if="index === mainPicIndex" class="image-square select-main-pic">
-            <p
-              :icon="['fa', 'times-circle']"
-              class="x-icon"
-              @click="deleteImage"
-              :data-index="index"
-            >☒</p>
+            <div class="x-icon" @click="deleteImage" :data-index="index">
+              <font-awesome-icon icon="times-circle" />
+            </div>
 
             <div class="image" @click="setMainPic">
               <img :src="image" width="100%" :data-index="index" />
             </div>
           </div>
           <div v-else class="image-square">
-            <p
-              :icon="['fa', 'times-circle']"
-              class="x-icon"
-              @click="deleteImage"
-              :data-index="index"
-            >☒</p>
+            <div class="x-icon" @click="deleteImage" :data-index="index">
+              <font-awesome-icon icon="times-circle" />
+            </div>
 
             <div class="image" @click="setMainPic">
               <img :src="image" width="100%" :data-index="index" />
@@ -117,8 +111,8 @@
 
         <div v-else @click="submit" class="create-button">上架商品</div>
       </div>
-      <BottomBar :page-name="PageName" />
     </div>
+    <BottomBar :page-name="PageName" />
   </div>
 </template>
 
@@ -548,13 +542,12 @@ input::-webkit-inner-spin-button {
     overflow-x: auto;
     display: flex;
     padding: 10px;
-    margin: 5% auto;
-    justify-content: space-around;
+    .image-wrapper {
+      margin-left: 10px;
+    }
 
     .image-square {
       background-color: #ffffff;
-      width: 150px;
-      height: 150px;
       padding: 2px;
     }
 
@@ -562,14 +555,14 @@ input::-webkit-inner-spin-button {
       display: flex;
       justify-content: space-around;
       align-items: center;
-      width: 100%;
-      height: 100%;
+      width: 150px;
+      height: 150px;
     }
 
     .x-icon {
       position: absolute;
-      right: -20px;
-      top: -25px;
+      right: -10px;
+      top: -15px;
       font-size: 40px;
       cursor: pointer;
     }
@@ -586,6 +579,7 @@ input::-webkit-inner-spin-button {
   .product {
     width: 100%;
     margin: 0 auto;
+    padding: 70px 0px;
   }
   .product-name {
     .name {

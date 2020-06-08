@@ -1,16 +1,21 @@
 <template>
-  <div>
+  <div class="form">
+    <img width="100px" src="../assets/cover.png" alt />
+    <div class="title">後台管理系統</div>
     <div>
-      <h1>請登入</h1>
-      <div>
-        <span>E-mail:</span>
-        <input type="email" name="email" placeholder="請輸入E-mail" v-model="email" />
-      </div>
-      <div>
-        <span>Password</span>
-        <input type="password" name="password" placeholder="請輸入密碼" v-model="password" />
-      </div>
-      <div class="create-button" @click="submit">登入</div>
+      <input class="form-input" type="email" name="email" placeholder="請輸入Email" v-model="email" />
+    </div>
+    <div>
+      <input
+        class="form-input"
+        type="password"
+        name="password"
+        placeholder="請輸入密碼"
+        v-model="password"
+      />
+    </div>
+    <div>
+      <button class="create-button" @click="submit">登入</button>
     </div>
   </div>
 </template>
@@ -53,12 +58,27 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$green: #34a94e;
-$red: #e23737;
-$blue: #17205b;
-$black: #252b3c;
-$grey: #919191;
 $white: #e5e5e5;
+
+.form {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.title {
+  font-size: 22px;
+  margin-bottom: 10px;
+  font-weight: 200;
+}
+
+.form-input {
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 18px;
+  letter-spacing: 1px;
+  margin: 10px 0px;
+  width: 270px;
+}
 
 .create-button {
   background-color: #5fd399;
@@ -72,5 +92,6 @@ $white: #e5e5e5;
   justify-content: center;
   align-items: center;
   padding: 10px;
+  border: none;
 }
 </style>

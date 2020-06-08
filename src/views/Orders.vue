@@ -1,45 +1,48 @@
 <template>
-  <div class="orders">
+  <div>
     <TopBar :page-title="title" :button-type="buttonType" />
-    <form class="datepicker">
-      從
-      <input
-        type="date"
-        name="startDate"
-        id="start"
-        :min="start"
-        :value="start"
-        @input="handleDateChange"
-      />
-      到
-      <input
-        type="date"
-        name="endDate"
-        id="end"
-        :max="end"
-        :value="end"
-        @input="handleDateChange"
-      />
-    </form>
-    <Spinner v-if="isLoading" />
-    <div class="orderOrCount" v-else>
-      <div v-if="state === 'order'" @click.stop.prevent="state = 'count'">產品數量統計</div>
-      <div v-if="state === 'count'" @click.stop.prevent="state = 'order'">瀏覽未完成訂單</div>
-    </div>
-    <div class="orders_box" v-if="state === 'order'">
-      <OrderCard v-for="order in orders" :key="order.id" :initial-order="order" />
-      <div class="feedback" v-if="orders.length < 1">此區間目前無任何未完成訂單。</div>
-    </div>
-    <div class="total-products" v-if="state === 'count'">
-      <div class="order-items">
-        <table class="order-table">
-          <tbody>
-            <tr v-for="item in result" :key="item.ProductSizeId">
-              <td>{{ item.quantity }} x</td>
-              <td>{{ item.size }} {{ item.name }}</td>
-            </tr>
-          </tbody>
-        </table>
+    <div class="orders">
+      <form class="datepicker">
+        從
+        <input
+          width="130px"
+          type="date"
+          name="startDate"
+          id="start"
+          :value="start"
+          @input="handleDateChange"
+        />
+        到
+        <input
+          width="130px"
+          type="date"
+          name="endDate"
+          id="end"
+          :value="end"
+          @input="handleDateChange"
+        />
+      </form>
+      <Spinner v-if="isLoading" />
+      <div class="orderOrCount" v-else>
+        <div v-if="state === 'order'" @click.stop.prevent="state = 'count'">產品數量統計</div>
+        <div v-if="state === 'count'" @click.stop.prevent="state = 'order'">瀏覽未完成訂單</div>
+      </div>
+      <div class="orders_box" v-if="state === 'order'">
+        <OrderCard v-for="order in orders" :key="order.id" :initial-order="order" />
+        <div class="feedback" v-if="orders.length < 1">此區間目前無任何未完成訂單。</div>
+      </div>
+      <div class="total-products" v-if="state === 'count'">
+        <div class="feedback" v-if="orders.length < 1">有未完成訂單時將會為您統計數量。</div>
+        <div v-else class="order-items">
+          <table class="order-table">
+            <tbody>
+              <tr v-for="item in result" :key="item.ProductSizeId">
+                <td>{{ item.quantity }} x</td>
+                <td>{{ item.size }} {{ item.name }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
     <BottomBar :page-name="name" />
@@ -168,13 +171,13 @@ $white: #e5e5e5;
 .orders {
   position: relative;
   height: 100vh;
-
+  padding-top: 80px;
   .datepicker {
     background-color: #fff;
     border-radius: 5px;
     padding: 5px;
     font-size: 12px;
-    margin: 20px 20px 10px 20px;
+    margin: 0px 20px 10px 20px;
   }
   .orderOrCount {
     text-align: right;
@@ -187,11 +190,11 @@ $white: #e5e5e5;
   .orders_box {
     height: 415px;
     overflow: scroll;
-    .feedback {
-      padding: 10px;
-      text-align: center;
-      font-weight: 200;
-    }
+  }
+  .feedback {
+    padding: 10px;
+    text-align: center;
+    font-weight: 200;
   }
   .order-items {
     background-color: #fff;

@@ -1,26 +1,27 @@
 <template>
-  <div class="customers-page">
+  <div>
     <TopBar :page-title="title" :button-type="buttonType" />
-
-    <div class="filter">
-      <input type="text" @keyup="autoCamplete" placeholder="電話搜尋" />
-      <ul class="autocomplete-results">
-        <li v-for="p in people" :key="p.id">
-          <router-link :to="{name: 'customer', params: { id: p.id }}">{{p.phone}} - {{p.name}}</router-link>
-        </li>
-      </ul>
-    </div>
-
-    <div v-for="(customer,index) in customers" :key="index">
-      <router-link v-if="index%2 === 0" :to="{ name: 'customer', params: { id: customer.id } }">
-        <div class="column white">{{customer.name}} - {{customer.phone}}</div>
-      </router-link>
-      <router-link
-        v-else-if="index%2 === 1"
-        :to="{ name: 'customer', params: { id: customer.id } }"
-      >
-        <div class="column grey">{{customer.name}} - {{customer.phone}}</div>
-      </router-link>
+    <div class="customers-page">
+      <div class="filter">
+        <input type="text" @keyup="autoCamplete" placeholder="電話搜尋" />
+        <ul class="autocomplete-results">
+          <li v-for="p in people" :key="p.id">
+            <router-link :to="{name: 'customer', params: { id: p.id }}">{{p.phone}} - {{p.name}}</router-link>
+          </li>
+        </ul>
+      </div>
+      <Spinner v-if="isLoading" />
+      <div v-for="(customer,index) in customers" :key="index">
+        <router-link v-if="index%2 === 0" :to="{ name: 'customer', params: { id: customer.id } }">
+          <div class="column white">{{customer.name}} - {{customer.phone}}</div>
+        </router-link>
+        <router-link
+          v-else-if="index%2 === 1"
+          :to="{ name: 'customer', params: { id: customer.id } }"
+        >
+          <div class="column grey">{{customer.name}} - {{customer.phone}}</div>
+        </router-link>
+      </div>
     </div>
     <BottomBar :page-name="name" />
   </div>
@@ -42,7 +43,8 @@ export default {
       name: "customers",
       buttonType: "",
       customers: [],
-      people: []
+      people: [],
+      isLoading: true
     };
   },
   created() {
@@ -58,7 +60,9 @@ export default {
         }
 
         this.customers = data;
+        this.isLoading = false;
       } catch (err) {
+        this.isLoading = false;
         console.log(err);
       }
     },
@@ -100,16 +104,16 @@ $border-color: 2px solid rgba(255, 255, 255, 0.6);
 
 .customers-page {
   height: 100vh;
+  padding: 70px 0px;
 }
 
 .filter {
-  margin: 5% 0;
   text-align: center;
 
   input {
     font-size: 18px;
     padding: 2%;
-    width: 380px;
+    width: 100%;
   }
 
   .autocomplete-results {
