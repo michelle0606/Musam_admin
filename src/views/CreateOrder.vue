@@ -3,35 +3,20 @@
     <TopBar :page-title="title" :button-type="buttonType" />
     <form @submit.prevent.stop="handleSubmit">
       <div class="wrapper">
-        <div v-show="step === 'one'">
+        <div v-show="step === 'one'" style="padding-top: 35px;">
           <div class="customer-info">
             <div class="form-title">訂購人</div>
             <div>
-              <input
-                v-model="booking_name"
-                type="text"
-                name="booking_name"
-                placeholder="輸入姓名"
-              />
+              <input v-model="booking_name" type="text" name="booking_name" placeholder="輸入姓名" />
             </div>
             <div>
-              <input
-                v-model="booking_phone"
-                type="text"
-                name="booking_phone"
-                placeholder="輸入電話號碼"
-              />
+              <input v-model="booking_phone" type="text" name="booking_phone" placeholder="輸入電話號碼" />
             </div>
           </div>
           <div class="recipient-info">
             <div class="form-title">收件人</div>
             <div>
-              <input
-                v-model="recipient_name"
-                type="text"
-                name="recipient_name"
-                placeholder="輸入姓名"
-              />
+              <input v-model="recipient_name" type="text" name="recipient_name" placeholder="輸入姓名" />
             </div>
             <div>
               <input
@@ -43,10 +28,7 @@
             </div>
             <div class="form-title">選擇取貨日期與時間</div>
             <div class="calender-wrapper">
-              <font-awesome-icon
-                :icon="['fas', 'calendar-alt']"
-                class="calender"
-              />
+              <font-awesome-icon :icon="['fas', 'calendar-alt']" class="calender" />
               <input
                 v-model="pickup_date"
                 type="date"
@@ -73,16 +55,12 @@
               v-if="product_delivery === 'self'"
               class="self deliver-type"
               @click.stop.prevent="changeProductDelivery"
-            >
-              自取
-            </div>
+            >自取</div>
             <div
               v-if="product_delivery === 'home'"
               class="home deliver-type"
               @click.stop.prevent="changeProductDelivery"
-            >
-              宅配
-            </div>
+            >宅配</div>
             <div v-show="product_delivery === 'home'">
               <input
                 v-model="address"
@@ -100,20 +78,13 @@
       </div>
       <div v-show="step === 'two'">
         <div class="keyin-area">
-          <input
-            @input="findMatch"
-            :value="inputValue"
-            type="text"
-            placeholder="輸入商品名稱"
-          />
+          <input @input="findMatch" :value="inputValue" type="text" placeholder="輸入商品名稱" />
           <ul v-if="matchProducts.length > 0 && inputValue !== ''">
             <li
               v-for="product in matchProducts"
               :key="product.id"
               @click="addProduct(product.id)"
-            >
-              {{ product.name }}
-            </li>
+            >{{ product.name }}</li>
           </ul>
         </div>
         <div class="showup-area">
@@ -144,8 +115,7 @@
                       v-for="size in orderProduct[0].sizes"
                       :value="size.id"
                       :key="size.ProductSize.id"
-                      >{{ size.size }}</option
-                    >
+                    >{{ size.size }}</option>
                   </select>
                 </td>
                 <td class="product-quantity">
@@ -157,22 +127,28 @@
                   />
                 </td>
                 <td class="product-price">
-                  {{
-                    orderProduct[0].sizes[orderProduct.chosenSize - 1]
-                      .ProductSize.price
-                  }}
+                  <div v-for="size in orderProduct[0].sizes" :key="size.ProductSize.id">
+                    <div v-if="size.id == orderProduct.chosenSize">{{size.ProductSize.price}}</div>
+                  </div>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
+
         <div class="note-area">
-          <input
-            type="text"
-            name="note"
-            v-model="note"
-            placeholder="訂單備註"
-          />
+          <input class="count-wrapper" type="text" name="note" v-model="note" placeholder="訂單備註" />
+        </div>
+        <div>
+          <div class="count-wrapper">
+            <div>商品總金額</div>
+            <div>NT${{amount}}</div>
+          </div>
+
+          <div class="count-wrapper">
+            <div>總收款金額（含運費NT${{shipping_fee}}）</div>
+            <div style="color:red;">NT${{amount + shipping_fee}}</div>
+          </div>
         </div>
         <div class="btn-group">
           <div class="last">
@@ -188,129 +164,142 @@
   </div>
 </template>
 <script>
-import productAPI from '../apis/products'
-import orderAPI from '../apis/orders'
-import { Toast } from './../utils/helpers'
+import productAPI from "../apis/products";
+import orderAPI from "../apis/orders";
+import { Toast } from "./../utils/helpers";
 
-const today = new Date()
-const year = today.getFullYear()
+const today = new Date();
+const year = today.getFullYear();
 const month =
-  today.getMonth() + 1 < 10 ? `0${today.getMonth() + 1}` : today.getMonth() + 1
+  today.getMonth() + 1 < 10 ? `0${today.getMonth() + 1}` : today.getMonth() + 1;
 const defaultDay =
-  today.getDate() + 1 < 10 ? `0${today.getDate() + 1}` : today.getDate() + 1
-const formatDate = `${year}-${month}-${defaultDay}`
+  today.getDate() + 1 < 10 ? `0${today.getDate() + 1}` : today.getDate() + 1;
+const formatDate = `${year}-${month}-${defaultDay}`;
 
 export default {
-  name: 'create-order',
+  name: "create-order",
   data() {
     return {
       name: this.$options.name,
-      title: '新增訂單',
-      buttonType: 'back',
-      step: 'one',
+      title: "新增訂單",
+      buttonType: "back",
+      step: "one",
       products: [],
-      inputValue: '',
+      inputValue: "",
       matchProducts: [],
       ///// order info /////
-      booking_name: '',
-      booking_phone: '',
-      recipient_name: '',
-      recipient_phone: '',
-      address: '',
-      note: '',
+      booking_name: "",
+      booking_phone: "",
+      recipient_name: "",
+      recipient_phone: "",
+      address: "",
+      note: "",
       pickup_date: formatDate,
-      pickup_time: '14:00',
-      product_delivery: 'self',
+      pickup_time: "14:00",
+      product_delivery: "self",
       orderProducts: [],
       amount: 0,
-      shipping_fee: 160,
+      shipping_fee: 0,
       //////////////////////
-      isProcessing: false,
-    }
+      isProcessing: false
+    };
   },
   created() {
-    this.fetchProducts()
+    this.fetchProducts();
   },
   methods: {
     async fetchProducts() {
       try {
-        const response = await productAPI.getProducts()
-        const { data, statusText } = response
-        if (statusText !== 'OK') throw new Error(statusText)
-        this.products = data
-        console.log('data', data)
+        const response = await productAPI.getProducts();
+        const { data, statusText } = response;
+        if (statusText !== "OK") throw new Error(statusText);
+        this.products = data;
+        console.log("data", data);
       } catch (error) {
-        console.log('err', error)
+        console.log("err", error);
       }
     },
     goToNextStep() {
-      this.step === 'two' ? (this.step = 'one') : (this.step = 'two')
+      this.step === "two" ? (this.step = "one") : (this.step = "two");
     },
     changeProductDelivery() {
-      this.product_delivery === 'home'
-        ? (this.product_delivery = 'self')
-        : (this.product_delivery = 'home')
+      this.product_delivery === "home"
+        ? (this.product_delivery = "self")
+        : (this.product_delivery = "home");
     },
     findMatch() {
-      this.inputValue = event.target.value
-      this.matchProducts = this.products.filter((product) => {
-        return product.name.match(this.inputValue)
-      })
+      this.inputValue = event.target.value;
+      this.matchProducts = this.products.filter(product => {
+        return product.name.match(this.inputValue);
+      });
     },
     addProduct(productId) {
-      this.inputValue = ''
-      this.matchProducts = []
-      let orderProduct = this.products.filter((product) => {
-        return product.id == productId
-      })
+      this.inputValue = "";
+      this.matchProducts = [];
+      let orderProduct = this.products.filter(product => {
+        return product.id == productId;
+      });
 
       this.orderProducts.push({
         ...orderProduct,
         orderId: this.orderProducts.length,
         quantity: 1,
-        chosenSize: '1',
-      })
+        chosenSize: orderProduct[0].sizes[0].id
+      });
+      this.calculatorAmount();
     },
     handleSizeChange(event, target_id) {
-      this.orderProducts.filter((item) => {
+      this.orderProducts.filter(item => {
         if (item.orderId == target_id) {
-          return (item.chosenSize = event.target.value)
+          return (item.chosenSize = event.target.value);
         }
-      })
+      });
+      this.calculatorAmount();
     },
     handleQuantityChange(event, target_id) {
-      this.orderProducts.filter((item) => {
+      this.orderProducts.filter(item => {
         if (item.orderId == target_id) {
-          return (item.quantity = event.target.value)
+          return (item.quantity = event.target.value);
         }
-      })
+      });
+      this.calculatorAmount();
+    },
+    calculatorAmount() {
+      const perOrderItemTotal = this.orderProducts.map(product => {
+        const targetProductSize = product[0].sizes.filter(size => {
+          return size.id == product.chosenSize;
+        });
+
+        return (
+          targetProductSize[0].ProductSize.price * Number(product.quantity)
+        );
+      });
+      this.amount = perOrderItemTotal.reduce((a, b) => a + b);
+
+      if (this.product_delivery === "home") {
+        if (this.amount <= 1500) {
+          this.shipping_fee = 160;
+        } else if (this.amount > 1500 && this.amount < 3000) {
+          this.shipping_fee = 225;
+        } else {
+          this.shipping_fee = 0;
+        }
+      } else {
+        this.shipping_fee = 0;
+      }
     },
     async handleSubmit(e) {
       try {
-        const perOrderItemTotal = this.orderProducts.map(
-          (product) =>
-            product[0].sizes[product.chosenSize - 1].ProductSize.price *
-            Number(product.quantity)
-        )
-        this.amount = perOrderItemTotal.reduce((a, b) => a + b)
-
-        if (this.amount <= 1500) {
-          this.shipping_fee = 160
-        } else if (this.amount > 1500 && this.amount < 3000) {
-          this.shipping_fee = 225
-        } else {
-          this.shipping_fee = 0
-        }
-
-        const orderItems = this.orderProducts.map((item) => {
-          const sizeIndex = item[0].sizes.filter((s) => {
-            return s.id == item.chosenSize
-          })
+        const orderItems = this.orderProducts.map(item => {
+          const sizeIndex = item[0].sizes.filter(s => {
+            return s.id == item.chosenSize;
+          });
           return {
             ProductSizeId: sizeIndex[0].ProductSize.id,
-            quantity: item.quantity,
-          }
-        })
+            quantity: item.quantity
+          };
+        });
+
         if (
           !this.recipient_name ||
           !this.recipient_phone ||
@@ -318,16 +307,16 @@ export default {
           !this.pickup_time ||
           !this.booking_name ||
           !this.booking_phone ||
-          (this.product_delivery === 'home' && !this.address) ||
+          (this.product_delivery === "home" && !this.address) ||
           this.orderProducts.length < 1
         ) {
           Toast.fire({
-            type: 'warning',
-            title: '訂單的所有資訊皆是必填。',
-          })
-          return
+            type: "warning",
+            title: "訂單的所有資訊皆是必填。"
+          });
+          return;
         }
-        this.isProcessing = true
+        this.isProcessing = true;
         const formData = {
           booking_name: this.booking_name,
           booking_phone: this.booking_phone,
@@ -340,20 +329,20 @@ export default {
           shipping_fee: this.shipping_fee,
           amount: this.amount,
           address: this.address,
-          note: this.note,
-        }
-        const response = await orderAPI.postOrder({ formData })
-        const { data, statusText } = response
-        if (statusText !== 'OK' || data.status !== 'success')
-          throw new Error(statusText)
-        this.$router.push({ name: 'order', params: { id: data.orderId } })
+          note: this.note
+        };
+        const response = await orderAPI.postOrder({ formData });
+        const { data, statusText } = response;
+        if (statusText !== "OK" || data.status !== "success")
+          throw new Error(statusText);
+        this.$router.push({ name: "order", params: { id: data.orderId } });
       } catch (error) {
-        console.log('error', error)
-        this.isProcessing = false
+        console.log("error", error);
+        this.isProcessing = false;
       }
-    },
-  },
-}
+    }
+  }
+};
 </script>
 <style lang="scss" scoped>
 $bgColor: #ebf3f5;
@@ -402,7 +391,7 @@ td {
   position: relative;
   height: 100vh;
   .wrapper {
-    padding: 10px 50px;
+    padding: 35px 50px;
     .customer-info,
     .recipient-info {
       .form-title {
@@ -539,5 +528,16 @@ td {
 
 .address {
   margin-bottom: 10px;
+}
+
+.count-wrapper {
+  display: flex;
+  justify-content: space-between;
+  color: grey;
+  margin-bottom: 10px;
+  padding: 8px 15px;
+  background-color: #ffffff;
+  font-size: 16px;
+  font-weight: 200;
 }
 </style>

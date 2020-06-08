@@ -71,6 +71,17 @@
         <label for="cancel">訂單備註</label>
         <input type="text" :value="order_info.note" disabled />
       </div>
+      <div>
+        <div class="count-wrapper">
+          <div>商品總金額</div>
+          <div>NT${{order_info.amount}}</div>
+        </div>
+
+        <div class="count-wrapper">
+          <div>總收款金額（含運費NT${{order_info.shipping_fee}}）</div>
+          <div style="color:red;">NT${{order_info.amount + order_info.shipping_fee}}</div>
+        </div>
+      </div>
       <div class="cancel-order">
         <div>
           <label for="cancel">取消訂單</label>
@@ -240,6 +251,17 @@ $white: #e5e5e5;
 .order {
   height: 100vh;
   position: relative;
+
+  .count-wrapper {
+    display: flex;
+    justify-content: space-between;
+    color: grey;
+    margin-bottom: 10px;
+    padding: 8px 15px;
+    background-color: #ffffff;
+    font-size: 14px;
+    font-weight: 200;
+  }
   .top-bar {
     background-color: $black;
     font-weight: 100;

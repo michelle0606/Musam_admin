@@ -48,9 +48,8 @@ $white: #e5e5e5;
   grid-template-columns: 140px 140px;
   grid-template-rows: 140px;
   grid-gap: 20px;
-  height: 475px;
+  padding: 80px 0px;
   margin: 0 auto;
-  padding-top: 80px;
   justify-content: center;
 
   .product {
