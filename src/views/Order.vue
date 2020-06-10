@@ -29,15 +29,15 @@
       </div>
       <div v-if="order_info.product_delivery === 'home'" class="address">{{ order_info.address }}</div>
       <div class="order-status">
-        <div v-if="order_info.order_status === 'cancelled'" class="order_status">訂單已取消</div>
         <div>
+          <div v-if="order_info.order_status === 'cancelled'" class="order_status">訂單已取消</div>
           <div
             v-if="order_info.order_status === 'unfinish'"
             class="order_status red"
             id="order_status"
             @click.prevent.stop="showWarning"
           >訂單未完成</div>
-          <div v-else class="order_status green">訂單已完成</div>
+          <div v-if="order_info.order_status === 'finish'" class="order_status green">訂單已完成</div>
         </div>
         <div>
           <div
@@ -87,9 +87,13 @@
           <label for="cancel">取消訂單</label>
           <input v-model="reason" type="text" id="cancel" placeholder="請輸入原因" @input="changeColor" />
         </div>
-        <div class="trash" disabled="disabled" @click.prevent.stop="cancelOrder(orderId)">
+        <button
+          class="trash"
+          :disabled="reason.length===0"
+          @click.prevent.stop="cancelOrder(orderId)"
+        >
           <font-awesome-icon :class="{ red: active === true }" :icon="['far', 'trash-alt']" />
-        </div>
+        </button>
       </div>
     </div>
 
@@ -222,12 +226,13 @@ export default {
       try {
         if (this.reason === "") return;
         const formData = {
-          id: id,
-          note: this.reason,
-          order_status: "cancelled"
+          note: this.reason
         };
         const response = await orderAPI.updateOrder({ id, formData });
         const { data, statusText } = response;
+        if (statusText === "OK" || data.status === "success") {
+          this.order_info.order_status = "cancelled";
+        }
         if (statusText !== "OK" || data.status !== "success")
           throw new Error(statusText);
       } catch (error) {

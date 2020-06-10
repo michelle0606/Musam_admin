@@ -72,6 +72,9 @@ const routes = [
 
 const router = new VueRouter({
   routes,
+  scrollBehavior(to, from) {
+    return { x: 0, y: 0 }
+  },
 })
 
 router.beforeEach((to, from, next) => {

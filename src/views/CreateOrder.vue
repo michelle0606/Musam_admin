@@ -13,6 +13,14 @@
               <input v-model="booking_phone" type="text" name="booking_phone" placeholder="輸入電話號碼" />
             </div>
           </div>
+          <input
+            class="checkbox-input"
+            type="checkbox"
+            name="same"
+            :value="same"
+            @change="sameInfo"
+          />
+          <label for="same">同訂購人</label>
           <div class="recipient-info">
             <div class="form-title">收件人</div>
             <div>
@@ -201,7 +209,8 @@ export default {
       amount: 0,
       shipping_fee: 0,
       //////////////////////
-      isProcessing: false
+      isProcessing: false,
+      same: false
     };
   },
   created() {
@@ -221,6 +230,17 @@ export default {
     },
     goToNextStep() {
       this.step === "two" ? (this.step = "one") : (this.step = "two");
+    },
+    sameInfo() {
+      this.same = !this.same;
+      if (this.same) {
+        console.log(this.recipient_name);
+        this.recipient_name = this.booking_name;
+        this.recipient_phone = this.booking_phone;
+      } else {
+        this.recipient_name = "";
+        this.recipient_phone = "";
+      }
     },
     changeProductDelivery() {
       this.product_delivery === "home"
@@ -452,6 +472,7 @@ td {
   height: 300px;
   background-color: #ffffff;
   margin: 10px 0px;
+  overflow: scroll;
 }
 .calender-wrapper {
   position: relative;
@@ -539,5 +560,10 @@ td {
   background-color: #ffffff;
   font-size: 16px;
   font-weight: 200;
+}
+
+.checkbox-input {
+  width: auto !important;
+  -webkit-appearance: checkbox !important;
 }
 </style>
