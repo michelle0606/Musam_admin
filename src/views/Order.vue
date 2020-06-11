@@ -3,9 +3,9 @@
     <Spinner v-if="isLoading" />
     <div class="top-bar">
       <div>
-        <router-link :to="{ name: 'orders' }">
+        <a @click="$router.go(-1)">
           <font-awesome-icon :icon="['fas', 'arrow-left']" />
-        </router-link>
+        </a>
       </div>
       <div class="title">{{ order_info.recipient_name }}</div>
       <div></div>
@@ -82,7 +82,7 @@
           <div style="color:red;">NT${{order_info.amount + order_info.shipping_fee}}</div>
         </div>
       </div>
-      <div class="cancel-order">
+      <div class="cancel-order" v-if="order_info.order_status === 'unfinish'">
         <div>
           <label for="cancel">取消訂單</label>
           <input v-model="reason" type="text" id="cancel" placeholder="請輸入原因" @input="changeColor" />

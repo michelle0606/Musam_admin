@@ -8,7 +8,12 @@
       </div>
       <div class="subtitle">未完成訂單</div>
       <Spinner v-if="isLoading" />
-      <div v-for="order in unfinishOrders" :key="order.id" class="unfinish-order">
+      <div
+        v-for="order in unfinishOrders"
+        :key="order.id"
+        class="unfinish-order"
+        @click.stop.prevent="checkoutOrder(order.id)"
+      >
         <div class="payment-method">
           <div v-if="order.product_delivery ==='home'">宅配</div>
           <div v-if="order.product_delivery ==='self'">自取</div>
@@ -22,15 +27,38 @@
         </div>
       </div>
       <div class="subtitle">已完成訂單</div>
+      <div v-if="finishOrders.length>0" class="finish-order table-title">
+        <div>訂單編號</div>
+        <div>訂單日期</div>
+        <div>訂單金額</div>
+      </div>
+      <div
+        v-for="order in finishOrders"
+        :key="order.id"
+        class="finish-order"
+        @click.stop.prevent="checkoutOrder(order.id)"
+      >
+        <div v-if="order.sn">{{order.sn.slice(6, 14)}}</div>
+        <div v-else>#{{order.id}}</div>
+        <div class="order-date">{{ formatDate(order.pickup_date) }}</div>
+        <div>$ {{ order.amount}}</div>
+      </div>
+      <div class="subtitle">已取消訂單</div>
       <div class="finish-order table-title">
         <div>訂單編號</div>
         <div>訂單日期</div>
         <div>訂單金額</div>
       </div>
-      <div v-for="order in finishOrders" :key="order.id" class="finish-order">
-        <div>{{order.sn.slice(6, 14)}}</div>
+      <div
+        v-for="order in cancelOrders"
+        :key="order.id"
+        class="finish-order"
+        @click.stop.prevent="checkoutOrder(order.id)"
+      >
+        <div v-if="order.sn">{{order.sn.slice(6, 14)}}</div>
+        <div v-else>#{{order.id}}</div>
         <div class="order-date">{{ formatDate(order.pickup_date) }}</div>
-        <div class="order-address">$ {{ order.amount+order.shipping_fee}}</div>
+        <div>$ {{ order.amount}}</div>
       </div>
     </div>
     <BottomBar :page-name="name" />
@@ -87,6 +115,8 @@ export default {
             this.unfinishOrders.push(order);
           } else if (order.order_status === "finish") {
             this.finishOrders.push(order);
+          } else if (order.order_status === "cancelled") {
+            this.cancelOrders.push(order);
           }
         });
         this.isLoading = false;
@@ -94,6 +124,9 @@ export default {
         this.isLoading = false;
         console.log(err);
       }
+    },
+    checkoutOrder(orderId) {
+      this.$router.push({ name: "order", params: { id: orderId } });
     },
     formatDate(date) {
       const day = new Date(date);
