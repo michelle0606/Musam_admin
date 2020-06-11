@@ -102,14 +102,14 @@
       <div class="type-one" v-if="type === 'one'">
         <div>請確定這筆訂單的所有品項皆已完成，並且寄出/交貨了，再按下確認鍵，確認後將無法修改。</div>
         <div>
-          <button @click.prevent.stop="warning === false">返回</button>
+          <button @click.prevent.stop="warning = false">返回</button>
           <button @click.prevent.stop="updateOrderStatus(orderId)">確認</button>
         </div>
       </div>
       <div class="type-two" v-if="type === 'two'">
         <div>請確定已經收到這筆訂單的款項後，再按下確認鍵，確認後將無法修改。</div>
         <div>
-          <button @click.prevent.stop="warning === false">返回</button>
+          <button @click.prevent.stop="warning = false">返回</button>
           <button @click.prevent.stop="updatePaymentStatus(orderId)">確認</button>
         </div>
       </div>
@@ -228,10 +228,11 @@ export default {
         const formData = {
           note: this.reason
         };
-        const response = await orderAPI.updateOrder({ id, formData });
+        const response = await orderAPI.cancelOrder({ id, formData });
         const { data, statusText } = response;
         if (statusText === "OK" || data.status === "success") {
           this.order_info.order_status = "cancelled";
+          this.order_info.note = this.reason;
         }
         if (statusText !== "OK" || data.status !== "success")
           throw new Error(statusText);
@@ -396,6 +397,7 @@ $white: #e5e5e5;
     input {
       font-size: 14px !important;
       width: 225px;
+      background-color: #fff;
     }
   }
   .cancel-order {
@@ -450,6 +452,10 @@ $white: #e5e5e5;
         }
       }
     }
+  }
+  .trash {
+    border: none;
+    background-color: #fff;
   }
 }
 </style>

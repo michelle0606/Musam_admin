@@ -12,7 +12,10 @@ export default {
   getOrder(orderId) {
     return apiHelper.get(`/admin/order/${orderId}`)
   },
-  updateOrder({ id, formData }) {
+  cancelOrder({ id, formData }) {
     return apiHelper.put(`/admin/order/${id}/cancel`, qs.stringify(formData))
+  },
+  updateOrder({ formData }) {
+    return apiHelper.put(`/admin/order/${formData.id}`, qs.stringify(formData))
   },
 }

@@ -163,7 +163,10 @@
             <div @click.stop.prevent="goToNextStep">上一步</div>
           </div>
           <div class="create-button">
-            <button :disabled="isProcessing" type="submit">成立訂單</button>
+            <button :disabled="isProcessing" type="submit">
+              <span v-if="!isProcessing">成立訂單</span>
+              <span v-else>成立中..</span>
+            </button>
           </div>
         </div>
       </div>
@@ -223,7 +226,6 @@ export default {
         const { data, statusText } = response;
         if (statusText !== "OK") throw new Error(statusText);
         this.products = data;
-        console.log("data", data);
       } catch (error) {
         console.log("err", error);
       }
@@ -234,7 +236,6 @@ export default {
     sameInfo() {
       this.same = !this.same;
       if (this.same) {
-        console.log(this.recipient_name);
         this.recipient_name = this.booking_name;
         this.recipient_phone = this.booking_phone;
       } else {
@@ -310,6 +311,7 @@ export default {
     },
     async handleSubmit(e) {
       try {
+        this.isProcessing = true;
         const orderItems = this.orderProducts.map(item => {
           const sizeIndex = item[0].sizes.filter(s => {
             return s.id == item.chosenSize;
@@ -330,13 +332,13 @@ export default {
           (this.product_delivery === "home" && !this.address) ||
           this.orderProducts.length < 1
         ) {
+          this.isProcessing = false;
           Toast.fire({
             type: "warning",
             title: "訂單的所有資訊皆是必填。"
           });
           return;
         }
-        this.isProcessing = true;
         const formData = {
           booking_name: this.booking_name,
           booking_phone: this.booking_phone,
