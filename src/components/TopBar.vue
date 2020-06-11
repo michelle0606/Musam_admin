@@ -23,7 +23,7 @@
       </div>
     </div>
     <div v-else-if="button === ''" class="type-one">
-      <div v-if="title === '客戶管理'">
+      <div v-if="title === '客戶管理' || title === '營收報表'">
         <div class="title">{{ title }}</div>
       </div>
     </div>

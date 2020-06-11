@@ -7,6 +7,7 @@
         <div>{{customer.phone}}</div>
       </div>
       <div class="subtitle">未完成訂單</div>
+      <div v-if="unfinishOrders.length===0" class="empty-tip">尚未完成的訂單會出現在這裡。</div>
       <Spinner v-if="isLoading" />
       <div
         v-for="order in unfinishOrders"
@@ -27,6 +28,7 @@
         </div>
       </div>
       <div class="subtitle">已完成訂單</div>
+      <div v-if="finishOrders.length===0" class="empty-tip">已經完成的訂單會出現在這裡。</div>
       <div v-if="finishOrders.length>0" class="finish-order table-title">
         <div>訂單編號</div>
         <div>訂單日期</div>
@@ -44,7 +46,8 @@
         <div>$ {{ order.amount}}</div>
       </div>
       <div class="subtitle">已取消訂單</div>
-      <div class="finish-order table-title">
+      <div v-if="cancelOrders.length===0" class="empty-tip">已經取消的訂單會出現在這裡。</div>
+      <div v-if="cancelOrders.length>0" class="finish-order table-title">
         <div>訂單編號</div>
         <div>訂單日期</div>
         <div>訂單金額</div>
@@ -79,7 +82,7 @@ export default {
     return {
       name: "customers",
       title: "",
-      buttonType: "back",
+      buttonType: "",
       customer: "",
       unfinishOrders: [],
       finishOrders: [],
@@ -211,6 +214,17 @@ $white: #e5e5e5;
   background-color: #ffffff;
   display: grid;
   grid-template-columns: 33% 33% 33%;
+}
+
+.empty-tip {
+  height: 50px;
+  margin-top: 2%;
+  background-color: #ffffff;
+  padding-left: 15px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .table-title {

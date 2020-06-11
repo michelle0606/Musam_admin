@@ -61,13 +61,8 @@ const routes = [
   {
     path: '/dashboard',
     name: 'dashboard',
-    component: Orders,
+    component: () => import('../views/Dashboard.vue'),
   },
-  // {
-  //   path: '/dashboard',
-  //   name: 'dashboard',
-  //   component: () => import('../views/Dashboard.vue')
-  // }
 ]
 
 const router = new VueRouter({
