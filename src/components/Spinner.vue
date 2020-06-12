@@ -10,7 +10,7 @@
 
 <style scoped>
 .spinner {
-  padding-top: 100px;
+  padding-top: 150px;
 }
 
 .bouncing-loader {
