@@ -27,8 +27,8 @@
             </div>
           </label>
         </div>
-        <div v-for="(image, index) in images" :key="index" class="image-wrapper">
-          <div v-if="index === mainPicIndex" class="image-square select-main-pic">
+        <div v-for="(image, index) in images" :key="index" class="image-square">
+          <div v-if="index === mainPicIndex" class="select-main-pic">
             <div class="x-icon" @click="deleteImage" :data-index="index">
               <font-awesome-icon icon="times-circle" />
             </div>
@@ -37,7 +37,7 @@
               <img :src="image" width="100%" :data-index="index" />
             </div>
           </div>
-          <div v-else class="image-square">
+          <div v-else>
             <div class="x-icon" @click="deleteImage" :data-index="index">
               <font-awesome-icon icon="times-circle" />
             </div>
@@ -538,17 +538,19 @@ input::-webkit-inner-spin-button {
   color: $grey;
 
   .product-image {
-    width: 100%;
+    max-width: 100%;
     overflow-x: auto;
-    display: flex;
+    display: inline-grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 160px;
+    justify-items: center;
+    white-space: nowrap;
     padding: 10px;
-    .image-wrapper {
-      margin-left: 10px;
-    }
 
     .image-square {
       background-color: #ffffff;
       padding: 2px;
+      margin: 0 4px;
     }
 
     .image {
@@ -563,8 +565,15 @@ input::-webkit-inner-spin-button {
       position: absolute;
       right: -10px;
       top: -15px;
+      z-index: 10;
       font-size: 40px;
       cursor: pointer;
+
+      svg {
+        color: #5fd399;
+        background-color: #ffffff;
+        border-radius: 100px;
+      }
     }
 
     .icon {
@@ -597,6 +606,10 @@ input::-webkit-inner-spin-button {
 
     .size {
       padding-bottom: 20px;
+
+      svg {
+        color: #5fd399;
+      }
     }
 
     .icon {
@@ -611,6 +624,7 @@ input::-webkit-inner-spin-button {
     .form-input {
       padding: 3%;
       display: grid;
+      align-items: center;
       grid-template-columns: 49% 2% 25% 24%;
 
       span {
@@ -656,7 +670,7 @@ input::-webkit-inner-spin-button {
 }
 .create-button {
   background-color: #5fd399;
-  color: $white;
+  color: #ffffff;
   border-radius: 5px;
   font-size: 16px;
   width: 100px;
@@ -670,7 +684,7 @@ input::-webkit-inner-spin-button {
 
 .status-change-button {
   background-color: $red;
-  color: $white;
+  color: #ffffff;
   border-radius: 5px;
   font-size: 16px;
   width: 100px;
