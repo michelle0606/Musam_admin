@@ -3,7 +3,7 @@
     <div class="order">
       <div class="product-delivery">
         <span class="green" v-if="order.product_delivery === 'home'">宅配</span>
-        <span class="red" v-if="order.product_delivery === 'self'">自取</span>
+        <span class="" v-if="order.product_delivery === 'self'">自取</span>
       </div>
       <div class="order-info">
         <div class="date-and-time">
@@ -24,12 +24,12 @@ export default {
   props: {
     initialOrder: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
-      order: this.initialOrder
+      order: this.initialOrder,
     }
   },
   methods: {
@@ -43,8 +43,8 @@ export default {
 
     formatTime(time) {
       if (time) return time.slice(0, 5)
-    }
-  }
+    },
+  },
 }
 </script>
 

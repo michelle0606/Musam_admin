@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Orders from '../views/Orders.vue'
-import Products from '../views/Products.vue'
 import store from '../store'
 import { Toast } from './../utils/helpers'
 
@@ -46,7 +44,7 @@ const routes = [
   {
     path: '/products',
     name: 'products',
-    component: Products,
+    component: () => import('../views/Products.vue'),
   },
   {
     path: '/product/create',

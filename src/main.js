@@ -14,9 +14,7 @@ import {
   faClock,
   faImage,
   faPlusCircle,
-
-  faTimesCircle
-
+  faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons'
 import { faAddressBook, faTrashAlt } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -38,6 +36,7 @@ library.add(
 import BottomBar from './components/BottomBar'
 import TopBar from './components/TopBar.vue'
 import Spinner from './components/Spinner'
+import vuetify from './plugins/vuetify'
 
 Vue.component('TopBar', TopBar)
 Vue.component('Spinner', Spinner)
@@ -49,5 +48,6 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
+  vuetify,
   render: (h) => h(App),
 }).$mount('#app')

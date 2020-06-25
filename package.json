@@ -2,10 +2,13 @@
   "name": "musam_admin",
   "version": "0.1.0",
   "private": true,
+  "description": "## Project setup ``` npm install ```",
+  "author": "",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build"
   },
+  "main": "babel.config.js",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.28",
     "@fortawesome/free-brands-svg-icons": "^5.13.0",
@@ -21,6 +24,7 @@
     "sweetalert2": "^9.5.3",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
+    "vuetify": "^2.2.11",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
@@ -28,21 +32,21 @@
     "@vue/cli-plugin-pwa": "^4.2.0",
     "@vue/cli-service": "^4.2.0",
     "node-sass": "^4.13.1",
-    "sass-loader": "^7.3.1",
+    "sass": "^1.19.0",
+    "sass-loader": "^8.0.0",
     "sass-resources-loader": "^2.0.1",
-    "vue-template-compiler": "^2.6.11"
+    "vue-cli-plugin-vuetify": "^2.0.5",
+    "vue-template-compiler": "^2.6.11",
+    "vuetify-loader": "^1.3.0"
   },
-  "description": "## Project setup ``` npm install ```",
-  "main": "babel.config.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/michelle0606/Musam_admin.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/michelle0606/Musam_admin/issues"
   },
-  "homepage": "https://github.com/michelle0606/Musam_admin#readme"
+  "homepage": "https://github.com/michelle0606/Musam_admin#readme",
+  "keywords": [],
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michelle0606/Musam_admin.git"
+  }
 }
