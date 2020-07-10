@@ -19,7 +19,7 @@
     </div>
     <div class="container">
       <div class="base-info">
-        <div v-if="order_info.product_delivery === 'self'" class="delivery">
+        <div v-if="order_info.product_delivery === 'self'" class="delivery red">
           自取
         </div>
         <div v-else class="delivery green">宅配</div>
@@ -42,7 +42,7 @@
           </div>
           <div
             v-if="order_info.order_status === 'unfinish'"
-            class="order_status"
+            class="order_status red"
             id="order_status"
             @click.prevent.stop="showWarning"
           >
@@ -58,7 +58,7 @@
         <div>
           <div
             v-if="order_info.payment_status === 'unpaid'"
-            class="payment_status"
+            class="payment_status red"
             id="payment_status"
             @click.prevent.stop="showWarning"
           >
@@ -196,7 +196,9 @@ export default {
       const day = new Date(date)
       const formatMonth =
         day.getMonth() > 10 ? day.getMonth() : day.getMonth() + 1
-      const formatDate = day.getDate() > 10 ? day.getDate() : day.getDate() + 1
+
+      const formatDate =
+        day.getDate() >= 10 ? day.getDate() : `0${day.getDate()}`
       return `${formatMonth}/${formatDate}`
     },
     formatTime(time) {

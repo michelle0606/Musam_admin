@@ -1,13 +1,23 @@
 <template>
   <div>
-    <TopBar :page-title="title" :button-type="buttonType" />
+    <div class="top-bar">
+      <div>
+        <a @click="$router.go(-1)">
+          <font-awesome-icon :icon="['fas', 'arrow-left']" />
+        </a>
+      </div>
+      <div class="title">{{ customer.name }}</div>
+      <div></div>
+    </div>
     <div class="customer-orders">
       <div class="customer-info">
         <div class="ptitle">電話號碼</div>
-        <div>{{customer.phone}}</div>
+        <div>{{ customer.phone }}</div>
       </div>
       <div class="subtitle">未完成訂單</div>
-      <div v-if="unfinishOrders.length===0" class="empty-tip">尚未完成的訂單會出現在這裡。</div>
+      <div v-if="unfinishOrders.length === 0" class="empty-tip">
+        尚未完成的訂單會出現在這裡。
+      </div>
       <Spinner v-if="isLoading" />
       <div
         v-for="order in unfinishOrders"
@@ -16,20 +26,22 @@
         @click.stop.prevent="checkoutOrder(order.id)"
       >
         <div class="payment-method">
-          <div v-if="order.product_delivery ==='home'">宅配</div>
-          <div v-if="order.product_delivery ==='self'">自取</div>
+          <div v-if="order.product_delivery === 'home'">宅配</div>
+          <div v-if="order.product_delivery === 'self'">自取</div>
         </div>
         <div>
           <div class="order-time">
             {{ formatDate(order.pickup_date) }}
             {{ formatTime(order.pickup_time) }}
           </div>
-          <div class="order-address">{{ order.address}}</div>
+          <div class="order-address">{{ order.address }}</div>
         </div>
       </div>
       <div class="subtitle">已完成訂單</div>
-      <div v-if="finishOrders.length===0" class="empty-tip">已經完成的訂單會出現在這裡。</div>
-      <div v-if="finishOrders.length>0" class="finish-order table-title">
+      <div v-if="finishOrders.length === 0" class="empty-tip">
+        已經完成的訂單會出現在這裡。
+      </div>
+      <div v-if="finishOrders.length > 0" class="finish-order table-title">
         <div>訂單編號</div>
         <div>訂單日期</div>
         <div>訂單金額</div>
@@ -40,14 +52,16 @@
         class="finish-order"
         @click.stop.prevent="checkoutOrder(order.id)"
       >
-        <div v-if="order.sn">{{order.sn.slice(6, 14)}}</div>
-        <div v-else>#{{order.id}}</div>
+        <div v-if="order.sn">{{ order.sn.slice(6, 14) }}</div>
+        <div v-else>#{{ order.id }}</div>
         <div class="order-date">{{ formatDate(order.pickup_date) }}</div>
-        <div>$ {{ order.amount}}</div>
+        <div>$ {{ order.amount }}</div>
       </div>
       <div class="subtitle">已取消訂單</div>
-      <div v-if="cancelOrders.length===0" class="empty-tip">已經取消的訂單會出現在這裡。</div>
-      <div v-if="cancelOrders.length>0" class="finish-order table-title">
+      <div v-if="cancelOrders.length === 0" class="empty-tip">
+        已經取消的訂單會出現在這裡。
+      </div>
+      <div v-if="cancelOrders.length > 0" class="finish-order table-title">
         <div>訂單編號</div>
         <div>訂單日期</div>
         <div>訂單金額</div>
@@ -58,10 +72,10 @@
         class="finish-order"
         @click.stop.prevent="checkoutOrder(order.id)"
       >
-        <div v-if="order.sn">{{order.sn.slice(6, 14)}}</div>
-        <div v-else>#{{order.id}}</div>
+        <div v-if="order.sn">{{ order.sn.slice(6, 14) }}</div>
+        <div v-else>#{{ order.id }}</div>
         <div class="order-date">{{ formatDate(order.pickup_date) }}</div>
-        <div>$ {{ order.amount}}</div>
+        <div>$ {{ order.amount }}</div>
       </div>
     </div>
     <BottomBar :page-name="name" />
@@ -69,81 +83,82 @@
 </template>
 
 <script>
-import BottomBar from "./../components/BottomBar";
-import TopBar from "./../components/TopBar";
-import CustomerAPI from "../apis/customers";
+import BottomBar from './../components/BottomBar'
+import TopBar from './../components/TopBar'
+import CustomerAPI from '../apis/customers'
 
 export default {
   components: {
     TopBar,
-    BottomBar
+    BottomBar,
   },
   data() {
     return {
-      name: "customers",
-      title: "",
-      buttonType: "",
-      customer: "",
+      name: 'customers',
+      title: '',
+      buttonType: '',
+      customer: '',
       unfinishOrders: [],
       finishOrders: [],
       cancelOrders: [],
-      isLoading: true
-    };
+      isLoading: true,
+    }
   },
   created() {
-    const { id: customerId } = this.$route.params;
-    this.fetchCustomer(customerId);
+    const { id: customerId } = this.$route.params
+    this.fetchCustomer(customerId)
   },
   beforeRouteUpdate(to, from, next) {
-    const { id: customerId } = to.params;
-    this.fetchProduct(customerId);
-    next();
+    const { id: customerId } = to.params
+    this.fetchProduct(customerId)
+    next()
   },
   methods: {
     async fetchCustomer(customerId) {
       try {
         const { data, statusText } = await CustomerAPI.getCustomer({
-          customerId
-        });
+          customerId,
+        })
 
-        if (statusText !== "OK") {
-          throw new Error(statusText);
+        if (statusText !== 'OK') {
+          throw new Error(statusText)
         }
 
-        this.customer = data;
-        this.title = data.name;
+        this.customer = data
+        this.title = data.name
 
-        data.Orders.forEach(order => {
-          if (order.order_status === "unfinish") {
-            this.unfinishOrders.push(order);
-          } else if (order.order_status === "finish") {
-            this.finishOrders.push(order);
-          } else if (order.order_status === "cancelled") {
-            this.cancelOrders.push(order);
+        data.Orders.forEach((order) => {
+          if (order.order_status === 'unfinish') {
+            this.unfinishOrders.push(order)
+          } else if (order.order_status === 'finish') {
+            this.finishOrders.push(order)
+          } else if (order.order_status === 'cancelled') {
+            this.cancelOrders.push(order)
           }
-        });
-        this.isLoading = false;
+        })
+        this.isLoading = false
       } catch (err) {
-        this.isLoading = false;
-        console.log(err);
+        this.isLoading = false
+        console.log(err)
       }
     },
     checkoutOrder(orderId) {
-      this.$router.push({ name: "order", params: { id: orderId } });
+      this.$router.push({ name: 'order', params: { id: orderId } })
     },
     formatDate(date) {
-      const day = new Date(date);
-      const formatYear = day.getFullYear();
+      const day = new Date(date)
+      const formatYear = day.getFullYear()
       const formatMonth =
-        day.getMonth() > 10 ? day.getMonth() : day.getMonth() + 1;
-      const formatDate = day.getDate() > 10 ? day.getDate() : day.getDate() + 1;
-      return `${formatYear}/${formatMonth}/${formatDate}`;
+        day.getMonth() > 10 ? day.getMonth() : day.getMonth() + 1
+      const formatDate =
+        day.getDate() >= 10 ? day.getDate() : `0${day.getDate()}`
+      return `${formatYear}/${formatMonth}/${formatDate}`
     },
     formatTime(time) {
-      if (time) return time.slice(0, 5);
-    }
-  }
-};
+      if (time) return time.slice(0, 5)
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
@@ -153,6 +168,25 @@ $blue: #17205b;
 $black: #252b3c;
 $grey: #919191;
 $white: #e5e5e5;
+
+.top-bar {
+  background-color: $black;
+  font-weight: 100;
+  height: 60px;
+  padding: 0px 20px;
+  color: $white;
+  display: grid;
+  grid-template-columns: 40px 70px 1fr 118px;
+  div {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    a {
+      color: $white;
+      margin-right: 10px;
+    }
+  }
+}
 
 .customer-orders {
   padding: 80px 0px;
