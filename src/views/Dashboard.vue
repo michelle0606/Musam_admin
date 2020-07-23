@@ -42,7 +42,7 @@ export default {
       total: 0,
       month: 0,
       today: 0,
-      averageOrderAmount: 0
+      averageOrderAmount: 0,
     };
   },
   created() {
@@ -69,7 +69,7 @@ export default {
     },
     calcuTotal(orders) {
       const result = orders
-        .map(order => {
+        .map((order) => {
           return order.amount;
         })
         .reduce((a, b) => {
@@ -78,10 +78,16 @@ export default {
       return result;
     },
     calcuThisMonth(orders) {
+      console.log("orders", orders);
       const result = orders
-        .map(order => {
-          if (new Date(order.pickup_date).getMonth() === new Date().getMonth())
+        .map((order) => {
+          if (
+            new Date(order.pickup_date).getFullYear() ===
+              new Date().getFullYear() &&
+            new Date(order.pickup_date).getMonth() === new Date().getMonth()
+          )
             return order.amount;
+          else return 0;
         })
         .reduce((a, b) => {
           return a + b;
@@ -90,8 +96,11 @@ export default {
     },
     calcuToday(orders) {
       const result = orders
-        .map(order => {
-          if (new Date(order.pickup_date).getDate() === new Date().getDate())
+        .map((order) => {
+          if (
+            new Date(order.pickup_date).getMonth() === new Date().getMonth() &&
+            new Date(order.pickup_date).getDate() === new Date().getDate()
+          )
             return order.amount;
           else return 0;
         })
@@ -99,8 +108,8 @@ export default {
           return a + b;
         }, 0);
       return result;
-    }
-  }
+    },
+  },
 };
 </script>
 
