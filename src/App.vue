@@ -1,7 +1,7 @@
 <template>
-  <v-app>
+  <div id="app">
     <router-view />
-  </v-app>
+  </div>
 </template>
 
 <style lang="scss">
@@ -12,9 +12,9 @@ $blue: #17205b;
 $black: #252b3c;
 $grey: #919191;
 $white: #e5e5e5;
-.theme--light {
-  background-color: $bgColor !important;
-}
+// .theme--light {
+//   background-color: $bgColor !important;
+// }
 
 body,
 html {
@@ -24,6 +24,7 @@ html {
   margin: 0;
   font-family: 'cwTeXYen', sans-serif;
   font-size: 18px;
+  background-color: $bgColor !important;
 }
 * {
   position: relative;

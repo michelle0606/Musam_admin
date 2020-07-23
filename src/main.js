@@ -36,7 +36,7 @@ library.add(
 import BottomBar from './components/BottomBar'
 import TopBar from './components/TopBar.vue'
 import Spinner from './components/Spinner'
-import vuetify from './plugins/vuetify'
+// import vuetify from './plugins/vuetify'
 
 Vue.component('TopBar', TopBar)
 Vue.component('Spinner', Spinner)
@@ -48,6 +48,6 @@ Vue.config.productionTip = false
 new Vue({
   router,
   store,
-  vuetify,
+  // vuetify,
   render: (h) => h(App),
 }).$mount('#app')

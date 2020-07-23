@@ -3,7 +3,7 @@
     <div class="order">
       <div class="product-delivery">
         <span class="green" v-if="order.product_delivery === 'home'">宅配</span>
-        <span class="" v-if="order.product_delivery === 'self'">自取</span>
+        <span class="red" v-if="order.product_delivery === 'self'">自取</span>
       </div>
       <div class="order-info">
         <div class="date-and-time">
@@ -37,7 +37,8 @@ export default {
       const day = new Date(date)
       const formatMonth =
         day.getMonth() > 10 ? day.getMonth() : day.getMonth() + 1
-      const formatDate = day.getDate() > 10 ? day.getDate() : day.getDate() + 1
+      const formatDate =
+        day.getDate() >= 10 ? day.getDate() : `0${day.getDate()}`
       return `${formatMonth}/${formatDate}`
     },
 
